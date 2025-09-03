@@ -1,0 +1,110 @@
+@property --background-color {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #3a3153;
+}
+
+body {
+  background-color: var(--background-color);
+}
+
+.scoreboard {
+  display: grid;
+  position: absolute;
+  top: 15vh;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.person {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 60vw;
+  height: 7vh;
+  padding: 5px 20px;
+  color: rgb(232, 232, 232);
+  border: 2px solid black;
+  margin-bottom: 5px;
+  font-size: 30px;
+  background: linear-gradient(
+    to right,
+    #228b22 0%,
+    #228b22 0%,
+    #434343 0%,
+    #434343 100%
+  );
+  transition: background 0.3s;
+}
+
+button {
+  background-color: #228b22;
+  border: none;
+  color: white;
+  text-align: center;
+  font-size: 16px;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.editBtn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
+
+#editor {
+  position: fixed;
+  left: 50%;
+  top: 10%;
+  transform: translateX(-50%);
+  width: 50vw;
+  height: auto;
+  background-color: white;
+  padding: 15px;
+  border: 2px solid black;
+}
+
+#editor button {
+  position: static;
+  margin-left: 5px;
+}
+
+.close {
+  background-color: rgb(159, 0, 0);
+}
+
+#addPlayerBtn {
+  background-color: grey;
+}
+
+#progressContainer {
+  width: 60vw;
+  margin: 20px auto;
+}
+
+.progressBar {
+  background: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 5px 0;
+  height: 25px;
+  position: relative;
+}
+
+.progressFill {
+  background: #228b22;
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s;
+}
+
+.progressLabel {
+  position: absolute;
+  left: 10px;
+  top: 3px;
+  font-size: 14px;
+  color: white;
+  font-weight: bold;
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🍺 BeerBoard 🍺</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <button class="editBtn" onclick="openEditor()">✏️ Edit</button>
+
+    <!-- 👇 total drinks display -->
+    <h1 id="totalDisplay">Total Drinks: 0</h1>
+    <div id="progressContainer"></div>
+
+    <div class="scoreboard">
+      <div class="person">
+        <p class="name">Jack</p>
+        <p class="number">10</p>
+      </div>
+      <div class="person">
+        <p class="name">Adam</p>
+        <p class="number">1</p>
+      </div>
+    </div>
+
+    <div id="editor" style="display: none">
+      <h2>Edit Leaderboard</h2>
+      <div id="editorList"></div>
+
+      <h3>Add Player</h3>
+      <input type="text" id="playerName" placeholder="Name" />
+      <input type="number" id="playerScore" placeholder="Score" />
+      <button id="addPlayerBtn">➕ Add</button>
+
+      <!-- 👇 your new total input -->
+      <h2>Set Total Drinks</h2>
+      <input type="number" id="total" placeholder="Total" />
+
+      <button
+        onclick="document.getElementById('editor').style.display = 'none'"
+        class="close"
+      >
+        ❌ Close
+      </button>
+    </div>
+  </body>
+</html>
