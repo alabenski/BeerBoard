@@ -11,10 +11,11 @@ body {
 .scoreboard {
   display: grid;
   position: absolute;
-  top: 15vh;
+  margin-top: 40px;
   left: 50%;
   transform: translateX(-50%);
 }
+
 
 .person {
   display: flex;
@@ -108,3 +109,14 @@ button {
   color: white;
   font-weight: bold;
 }
+
+#beerMugContainer {
+  text-align: center;
+  margin-top: 10px;
+}
+
+#beerMug {
+  width: 120px;
+  height: auto;
+}
+

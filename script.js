@@ -34,7 +34,9 @@ function sortLeaderboard() {
 function refreshBoard() {
   sortLeaderboard();
   updateProgress();
+  updateBeerMug();
 }
+
 
 function openEditor() {
   const editor = document.getElementById("editor");
@@ -91,6 +93,27 @@ function openEditor() {
   });
 
   editor.style.display = "block";
+}
+
+function updateBeerMug() {
+  if (totalDrinks <= 0) {
+    document.getElementById("beerMug").src = "beer1.png";
+    return;
+  }
+
+  // Find sum of all scores
+  let currentTotal = 0;
+  document.querySelectorAll(".person .number").forEach((num) => {
+    currentTotal += parseInt(num.innerText) || 0;
+  });
+
+  // Calculate fullness (1–7)
+  const fullness = Math.min(
+    7,
+    Math.max(1, Math.round((currentTotal / totalDrinks) * 7))
+  );
+
+  document.getElementById("beerMug").src = `beer${fullness}.png`;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
