@@ -16,18 +16,17 @@ body {
   transform: translateX(-50%);
 }
 
-
 .person {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; /* name left, rightSide+remove right */
   align-items: center;
   width: 60vw;
   height: 7vh;
   padding: 5px 20px;
-  color: rgb(232, 232, 232);
-  border: 2px solid black;
   margin-bottom: 5px;
+  border: 2px solid black;
   font-size: 30px;
+  color: rgb(232, 232, 232);
   background: linear-gradient(
     to right,
     #228b22 0%,
@@ -36,6 +35,47 @@ body {
     #434343 100%
   );
   transition: background 0.3s;
+}
+
+.name {
+  flex: 1 1 auto;
+}
+
+.right-side {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.totalInput {
+  font-size: 18px;
+  width: 80px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.plusBtn {
+  background-color: #228b22;
+  border: none;
+  color: white;
+  font-size: 20px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.removeBtn {
+  background-color: rgb(159, 0, 0);
+  border: none;
+  color: white;
+  font-size: 20px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 20px;
+  flex: 0 0 auto;
 }
 
 button {
@@ -49,7 +89,13 @@ button {
   cursor: pointer;
 }
 
-.editBtn {
+#editBtn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
+
+#closeBtn {
   position: fixed;
   top: 20px;
   right: 20px;
@@ -78,11 +124,6 @@ button {
 
 #addPlayerBtn {
   background-color: grey;
-}
-
-#progressContainer {
-  width: 60vw;
-  margin: 20px auto;
 }
 
 .progressBar {
@@ -120,3 +161,88 @@ button {
   height: auto;
 }
 
+#totalProgress {
+  width: 80vw;
+  height: 5vh;
+  background-color: white;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  justify-content: center;
+}
+
+#totalProgress h2 {
+  margin: 0;
+  font-size: 18px;
+  color: rgb(232, 232, 232);
+  z-index: 1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#totalProgressLabel {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+  color: black;
+}
+
+#beerMug {
+  width: 120px;
+  height: auto;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+/* Shake animation */
+@keyframes shake {
+  0% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-3deg);
+  }
+  40% {
+    transform: rotate(3deg);
+  }
+  60% {
+    transform: rotate(-5deg);
+  }
+  80% {
+    transform: rotate(5deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* Shake intensity levels */
+.shake1 {
+  animation: shake 1s infinite ease-in-out;
+}
+.shake2 {
+  animation: shake 0.8s infinite ease-in-out;
+}
+.shake3 {
+  animation: shake 0.6s infinite ease-in-out;
+}
+.shake4 {
+  animation: shake 0.5s infinite ease-in-out;
+}
+.shake5 {
+  animation: shake 0.4s infinite ease-in-out;
+}
+.shake6 {
+  animation: shake 0.3s infinite ease-in-out;
+}
+.shake7 {
+  animation: shake 0.2s infinite ease-in-out;
+}
+
+.nameInput {
+  font-size: 30px;
+  border: 1px solid #ccc;
+  padding: 2px 6px;
+}
