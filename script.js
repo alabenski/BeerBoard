@@ -37,7 +37,6 @@ function refreshBoard() {
   updateBeerMug();
 }
 
-
 function openEditor() {
   const editor = document.getElementById("editor");
   const editorList = document.getElementById("editorList");
@@ -97,7 +96,7 @@ function openEditor() {
 
 function updateBeerMug() {
   if (totalDrinks <= 0) {
-    document.getElementById("beerMug").src = "beer1.png";
+    document.getElementById("beerMug").src = "beers/beer1.png";
     return;
   }
 
@@ -113,7 +112,7 @@ function updateBeerMug() {
     Math.max(1, Math.round((currentTotal / totalDrinks) * 7))
   );
 
-  document.getElementById("beerMug").src = `beer${fullness}.png`;
+  document.getElementById("beerMug").src = `beers/beer${fullness}.png`;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
