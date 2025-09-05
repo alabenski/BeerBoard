@@ -231,3 +231,19 @@ button {
 .shake7 {
   animation: shake 0.2s infinite ease-in-out;
 }
+
+.goalFlash {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.7),
+    0 0 20px 6px rgba(255, 215, 0, 0.7);
+  transition: box-shadow 0.3s ease;
+}
+
+#confettiCanvas {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+}

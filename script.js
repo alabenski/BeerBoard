@@ -1,4 +1,80 @@
 let totalDrinks = 0;
+let goalAnnounced = false;
+
+let confettiActive = false;
+let confettiParticles = [];
+let confettiCtx;
+let confettiAnimation;
+
+function initConfetti() {
+  const canvas = document.getElementById("confettiCanvas");
+  confettiCtx = canvas.getContext("2d");
+
+  // resize to full screen
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
+}
+
+function startConfetti() {
+  if (confettiActive) return; // already running
+  confettiActive = true;
+  confettiParticles = [];
+
+  const colors = ["#ff0", "#f0f", "#0ff", "#0f0", "#f00", "#00f", "#ffa500"];
+
+  for (let i = 0; i < 150; i++) {
+    confettiParticles.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight - window.innerHeight,
+      r: Math.random() * 6 + 4, // size
+      d: Math.random() * 0.5 + 0.5, // density
+      color: colors[Math.floor(Math.random() * colors.length)],
+      tilt: Math.random() * 10 - 10,
+      tiltAngleIncrement: Math.random() * 0.07 + 0.05,
+      tiltAngle: 0,
+    });
+  }
+
+  (function animate() {
+    confettiAnimation = requestAnimationFrame(animate);
+    drawConfetti();
+  })();
+}
+
+function stopConfetti() {
+  confettiActive = false;
+  cancelAnimationFrame(confettiAnimation);
+  if (confettiCtx)
+    confettiCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+}
+
+function drawConfetti() {
+  if (!confettiCtx) return;
+  confettiCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+  confettiParticles.forEach((p) => {
+    p.tiltAngle += p.tiltAngleIncrement;
+    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+    p.x += Math.sin(p.d);
+    p.tilt = Math.sin(p.tiltAngle - p.r / 2) * 15;
+
+    if (p.y > window.innerHeight) {
+      p.y = -10;
+      p.x = Math.random() * window.innerWidth;
+    }
+
+    confettiCtx.beginPath();
+    confettiCtx.lineWidth = p.r;
+    confettiCtx.strokeStyle = p.color;
+    confettiCtx.moveTo(p.x + p.tilt + p.r / 4, p.y);
+    confettiCtx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 4);
+    confettiCtx.stroke();
+  });
+}
 
 const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 const scoreOf = (person) =>
@@ -23,6 +99,33 @@ function updateProgressComputed(people, scores, total) {
     const percent = total > 0 ? (scores[i] / total) * 100 : 0;
     setPersonFill(person, percent);
   });
+}
+
+function checkTotalReached(sum, total) {
+  const reached = total > 0 && sum >= total;
+
+  if (reached && !goalAnnounced) {
+    goalAnnounced = true;
+
+    const s = document.getElementById("beerWin");
+    if (s) {
+      s.currentTime = 0;
+      s.play().catch(() => {});
+    }
+
+    document.getElementById("totalProgress")?.classList.add("goalFlash");
+    $$(".plusBtn").forEach((b) => (b.disabled = true));
+
+    startConfetti(); // 🎉 start raining confetti
+  }
+
+  if (!reached && goalAnnounced) {
+    goalAnnounced = false;
+    document.getElementById("totalProgress")?.classList.remove("goalFlash");
+    $$(".plusBtn").forEach((b) => (b.disabled = false));
+
+    stopConfetti(); // 🛑 stop confetti when going below goal
+  }
 }
 
 function updateTotalProgressComputed(sum, total) {
@@ -66,10 +169,14 @@ function sortLeaderboard() {
 
 function refreshBoard() {
   sortLeaderboard();
+
   const { people, scores, sum, total } = computeTotals();
+
   updateProgressComputed(people, scores, total);
   updateTotalProgressComputed(sum, total);
   updateBeerMugComputed(sum, total);
+
+  checkTotalReached(sum, total);
 }
 
 function makeNameEditable(nameEl) {
@@ -170,14 +277,25 @@ function setupPerson(person) {
     plus.className = "plusBtn";
     plus.textContent = "+";
     plus.addEventListener("click", () => {
-      const sound = document.getElementById("addBeerSound");
-      if (sound) {
-        sound.currentTime = 0;
-        sound.play().catch((err) => console.warn("Playback blocked:", err));
-      }
+      const { sum, total } = computeTotals();
+
+      if (total > 0 && sum >= total) return;
+
       numberEl.textContent = (parseInt(numberEl.textContent) || 0) + 1;
+
+      const { sum: newSum, total: newTotal } = computeTotals();
+
+      if (!(newTotal > 0 && newSum >= newTotal)) {
+        const sound = document.getElementById("addBeerSound");
+        if (sound) {
+          sound.currentTime = 0;
+          sound.play().catch((err) => console.warn("Playback blocked:", err));
+        }
+      }
+
       refreshBoard();
     });
+
     rightSide.appendChild(plus);
   }
 
@@ -188,6 +306,13 @@ function setupPerson(person) {
     remove.textContent = "❌";
     remove.addEventListener("click", () => {
       person.remove();
+
+      const sound = document.getElementById("removePlayerSound");
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch((err) => console.warn("Playback blocked:", err));
+      }
+
       refreshBoard();
     });
     person.appendChild(remove);
@@ -280,6 +405,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  initConfetti();
   makeTotalEditable();
   refreshBoard();
 });
