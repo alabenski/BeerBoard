@@ -1,169 +1,82 @@
 let totalDrinks = 0;
 
-function updateProgress() {
-  const people = document.querySelectorAll(".person");
-  people.forEach((person) => {
-    const score = parseInt(person.querySelector(".number").innerText) || 0;
-    const percent = totalDrinks > 0 ? (score / totalDrinks) * 100 : 0;
+const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+const scoreOf = (person) =>
+  parseInt(person.querySelector(".number")?.textContent) || 0;
 
-    person.style.background = `
-      linear-gradient(
-        to right,
-        #228b22 ${percent}%,
-        #434343 ${percent}%
-      )
-    `;
+function computeTotals() {
+  const people = $$(".person");
+  const scores = people.map(scoreOf);
+  const sum = scores.reduce((a, b) => a + b, 0);
+  return { people, scores, sum, total: totalDrinks };
+}
+
+function personFillGradient(percent) {
+  return `linear-gradient(to right, #228b22 ${percent}%, #434343 ${percent}%)`;
+}
+function setPersonFill(person, percent) {
+  person.style.background = personFillGradient(percent);
+}
+
+function updateProgressComputed(people, scores, total) {
+  people.forEach((person, i) => {
+    const percent = total > 0 ? (scores[i] / total) * 100 : 0;
+    setPersonFill(person, percent);
   });
 }
 
-function updateTotalProgress() {
-  const total = document.getElementById("totalProgress");
+function updateTotalProgressComputed(sum, total) {
+  const totalBar = document.getElementById("totalProgress");
   const label = document.getElementById("totalProgressLabel");
-  let sum = 0;
+  if (totalBar) {
+    const percent = total > 0 ? (sum / total) * 100 : 0;
+    totalBar.style.background = personFillGradient(percent);
+  }
+  if (label) label.textContent = `Total: ${sum} / ${total}`;
+}
 
-  const people = document.querySelectorAll(".person");
-  people.forEach((person) => {
-    const score = parseInt(person.querySelector(".number").innerText) || 0;
-    sum += score;
-  });
+function updateBeerMugComputed(sum, total) {
+  const mug = document.getElementById("beerMug");
+  if (!mug) return;
 
-  const percent = totalDrinks > 0 ? (sum / totalDrinks) * 100 : 0;
-  total.style.background = `
-    linear-gradient(
-      to right,
-      #228b22 ${percent}%,
-      #434343 ${percent}%
-    )
-  `;
-
-  label.innerText = `Total: ${sum} / ${totalDrinks}`;
+  if (total <= 0) {
+    mug.src = "beers/beer1.png";
+    mug.className = "";
+    return;
+  }
+  const fullness = Math.min(7, Math.max(1, Math.round((sum / total) * 7)));
+  mug.src = `beers/beer${fullness}.png`;
+  mug.className = fullness > 1 ? `shake${fullness}` : "";
 }
 
 function sortLeaderboard() {
   const scoreboard = document.querySelector(".scoreboard");
+  if (!scoreboard) return;
+
   const addBtn = document.getElementById("addPlayerInline");
   const people = Array.from(scoreboard.querySelectorAll(".person"));
 
-  people.sort((a, b) => {
-    const aNum = a.querySelector(".number");
-    const bNum = b.querySelector(".number");
-    const scoreA = aNum ? parseInt(aNum.innerText) || 0 : 0;
-    const scoreB = bNum ? parseInt(bNum.innerText) || 0 : 0;
-    return scoreB - scoreA;
-  });
+  people.sort((a, b) => scoreOf(b) - scoreOf(a));
 
   people.forEach((person) => {
-    if (addBtn) {
-      scoreboard.insertBefore(person, addBtn);
-    } else {
-      scoreboard.appendChild(person);
-    }
+    if (addBtn) scoreboard.insertBefore(person, addBtn);
+    else scoreboard.appendChild(person);
   });
 }
 
 function refreshBoard() {
   sortLeaderboard();
-  updateProgress();
-  updateTotalProgress();
-  updateBeerMug();
-}
-
-// function openEditor(fromClick = false) {
-//   if (fromClick) {
-//     const sound = document.getElementById("editorSound");
-//     sound.currentTime = 0;
-//     sound.play().catch((err) => console.warn("Playback blocked:", err));
-//   }
-
-//   document.getElementById("editBtn").style.display = "none";
-//   document.getElementById("closeBtn").style.display = "block";
-
-//   const editor = document.getElementById("editor");
-//   const editorList = document.getElementById("editorList");
-//   editorList.innerHTML = "";
-
-//   document.querySelectorAll(".person").forEach((person, idx) => {
-//     const name = person.querySelector(".name").innerText;
-//     const score = person.querySelector(".number").innerText;
-
-//     const row = document.createElement("div");
-//     row.style.marginBottom = "8px";
-
-//     const nameInput = document.createElement("input");
-//     nameInput.type = "text";
-//     nameInput.value = name;
-//     nameInput.addEventListener("input", () => {
-//       person.querySelector(".name").innerText = nameInput.value.trim() || "—";
-//     });
-
-//     const scoreInput = document.createElement("input");
-//     scoreInput.type = "number";
-//     scoreInput.value = score;
-//     scoreInput.addEventListener("input", () => {
-//       person.querySelector(".number").innerText =
-//         scoreInput.value.trim() || "0";
-//       refreshBoard();
-//     });
-
-//     const removeBtn = document.createElement("button");
-//     removeBtn.textContent = "🗑 Remove";
-//     removeBtn.style.backgroundColor = "rgb(159,0,0)";
-//     removeBtn.addEventListener("click", () => {
-//       person.remove();
-//       openEditor();
-//       refreshBoard();
-//     });
-
-//     row.appendChild(nameInput);
-//     row.appendChild(scoreInput);
-//     row.appendChild(removeBtn);
-
-//     editorList.appendChild(row);
-//   });
-
-//   const totalInput = document.getElementById("total");
-//   totalInput.value = totalDrinks;
-//   totalInput.addEventListener("input", () => {
-//     totalDrinks = parseInt(totalInput.value) || 0;
-//     refreshBoard();
-//   });
-
-//   editor.style.display = "block";
-// }
-
-function closeEditor() {
-  document.getElementById("editor").style.display = "none";
-  document.getElementById("closeBtn").style.display = "none";
-  document.getElementById("editBtn").style.display = "block";
-}
-
-function updateBeerMug() {
-  const mug = document.getElementById("beerMug");
-
-  if (totalDrinks <= 0) {
-    mug.src = "beers/beer1.png";
-    mug.className = "";
-    return;
-  }
-
-  let currentTotal = 0;
-  document.querySelectorAll(".person .number").forEach((num) => {
-    currentTotal += parseInt(num.innerText) || 0;
-  });
-
-  const fullness = Math.min(
-    7,
-    Math.max(1, Math.round((currentTotal / totalDrinks) * 7))
-  );
-
-  mug.src = `beers/beer${fullness}.png`;
-
-  mug.className = fullness > 1 ? `shake${fullness}` : "";
+  const { people, scores, sum, total } = computeTotals();
+  updateProgressComputed(people, scores, total);
+  updateTotalProgressComputed(sum, total);
+  updateBeerMugComputed(sum, total);
 }
 
 function makeNameEditable(nameEl) {
-  nameEl.addEventListener("click", () => {
-    const currentName = nameEl.innerText;
+  if (!nameEl) return;
+
+  nameEl.onclick = () => {
+    const currentName = nameEl.textContent;
 
     const input = document.createElement("input");
     input.type = "text";
@@ -176,9 +89,8 @@ function makeNameEditable(nameEl) {
 
     function save() {
       const newName = input.value.trim() || "—";
-      nameEl.innerText = newName;
+      nameEl.textContent = newName;
       input.replaceWith(nameEl);
-
       makeNameEditable(nameEl);
     }
 
@@ -186,15 +98,50 @@ function makeNameEditable(nameEl) {
       if (e.key === "Enter") save();
     });
     input.addEventListener("blur", save);
-  });
+  };
+}
+
+function makeNumberEditable(numberEl) {
+  if (!numberEl) return;
+
+  numberEl.onclick = () => {
+    const current = numberEl.textContent.trim();
+
+    const input = document.createElement("input");
+    input.type = "number";
+    input.value = current || "0";
+    input.className = "numberInput";
+
+    numberEl.replaceWith(input);
+    input.focus();
+    input.select();
+
+    function save() {
+      const n = parseInt(input.value);
+      const safe = Number.isFinite(n) ? n : 0;
+
+      numberEl.textContent = String(safe);
+      input.replaceWith(numberEl);
+
+      makeNumberEditable(numberEl);
+      refreshBoard();
+    }
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") save();
+    });
+    input.addEventListener("blur", save);
+  };
 }
 
 function setupPerson(person) {
+  if (!person) return;
+
   let nameEl = person.querySelector(".name");
   if (!nameEl) {
     nameEl = document.createElement("p");
     nameEl.className = "name";
-    nameEl.innerText = "—";
+    nameEl.textContent = "—";
     person.prepend(nameEl);
   }
   makeNameEditable(nameEl);
@@ -210,12 +157,13 @@ function setupPerson(person) {
   if (!numberEl) {
     numberEl = document.createElement("p");
     numberEl.className = "number";
-    numberEl.innerText = "0";
+    numberEl.textContent = "0";
   }
-
   if (numberEl.parentElement !== rightSide) {
     rightSide.prepend(numberEl);
   }
+
+  makeNumberEditable(numberEl);
 
   if (!rightSide.querySelector(".plusBtn")) {
     const plus = document.createElement("button");
@@ -227,14 +175,15 @@ function setupPerson(person) {
         sound.currentTime = 0;
         sound.play().catch((err) => console.warn("Playback blocked:", err));
       }
-      numberEl.innerText = (parseInt(numberEl.innerText) || 0) + 1;
+      numberEl.textContent = (parseInt(numberEl.textContent) || 0) + 1;
       refreshBoard();
     });
     rightSide.appendChild(plus);
   }
 
-  if (!person.querySelector(".removeBtn")) {
-    const remove = document.createElement("button");
+  let remove = person.querySelector(".removeBtn");
+  if (!remove) {
+    remove = document.createElement("button");
     remove.className = "removeBtn";
     remove.textContent = "❌";
     remove.addEventListener("click", () => {
@@ -243,11 +192,17 @@ function setupPerson(person) {
     });
     person.appendChild(remove);
   }
+
+  if (person.children.length >= 3) {
+    person.append(nameEl, rightSide, remove);
+  }
 }
 
 function makeTotalEditable() {
   const label = document.getElementById("totalProgressLabel");
-  label.addEventListener("click", () => {
+  if (!label) return;
+
+  label.onclick = () => {
     const input = document.createElement("input");
     input.type = "number";
     input.value = totalDrinks;
@@ -255,17 +210,18 @@ function makeTotalEditable() {
 
     label.replaceWith(input);
     input.focus();
+    input.select();
 
     function save() {
       totalDrinks = parseInt(input.value) || 0;
 
       const newLabel = document.createElement("h2");
       newLabel.id = "totalProgressLabel";
-      newLabel.innerText = `Total: ${totalDrinks}`;
+
+      newLabel.textContent = `Total: ${totalDrinks}`;
       input.replaceWith(newLabel);
 
       makeTotalEditable();
-
       refreshBoard();
     }
 
@@ -273,11 +229,11 @@ function makeTotalEditable() {
       if (e.key === "Enter") save();
     });
     input.addEventListener("blur", save);
-  });
+  };
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".person").forEach(setupPerson);
+  $$(".person").forEach(setupPerson);
 
   const addBtn = document.getElementById("addPlayerBtn");
   if (addBtn) {
@@ -292,42 +248,38 @@ document.addEventListener("DOMContentLoaded", () => {
         <p class="name">${name}</p>
         <p class="number">${score}</p>
       `;
-
       document.querySelector(".scoreboard").appendChild(personDiv);
       setupPerson(personDiv);
 
       document.getElementById("playerName").value = "";
       document.getElementById("playerScore").value = "";
 
-      openEditor();
-
       refreshBoard();
     });
   }
 
   const addInline = document.getElementById("addPlayerInline");
-  addInline.addEventListener("click", () => {
-    const personDiv = document.createElement("div");
-    personDiv.className = "person";
-    personDiv.innerHTML = `
-      <p class="name">New Player</p>
-      <p class="number">0</p>
-    `;
+  if (addInline) {
+    addInline.addEventListener("click", () => {
+      const personDiv = document.createElement("div");
+      personDiv.className = "person";
+      personDiv.innerHTML = `
+        <p class="name">New Player</p>
+        <p class="number">0</p>
+      `;
+      addInline.before(personDiv);
+      setupPerson(personDiv);
 
-    addInline.before(personDiv);
+      const sound = document.getElementById("addPlayerSound");
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch((err) => console.warn("Playback blocked:", err));
+      }
 
-    setupPerson(personDiv);
-
-    const sound = document.getElementById("addPlayerSound");
-    if (sound) {
-      sound.currentTime = 0;
-      sound.play().catch((err) => console.warn("Playback blocked:", err));
-    }
-
-    refreshBoard();
-  });
+      refreshBoard();
+    });
+  }
 
   makeTotalEditable();
-
   refreshBoard();
 });

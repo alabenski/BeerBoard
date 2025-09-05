@@ -1,42 +1,64 @@
-@property --background-color {
-  syntax: "<color>";
-  inherits: false;
-  initial-value: #3a3153;
+:root {
+  --green: #228b22;
+  --danger: #9f0000;
+  --text-light: rgb(232, 232, 232);
+  --border: #000;
+  --track: #434343;
+  --bg-overlay: #fff;
+  --radius: 6px;
+  --gap: 10px;
+}
+
+html,
+body {
+  height: 100%;
 }
 
 body {
+  font-family: "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
   background-image: url("background.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
+  margin: 0;
+}
+
+p,
+h2 {
+  font-weight: 400;
+}
+
+.roboto-p {
+  font: inherit;
 }
 
 .scoreboard {
   display: grid;
   position: absolute;
-  margin-top: 40px;
   top: 35vh;
   left: 50%;
   transform: translateX(-50%);
+  margin-top: 40px;
+  gap: 5px;
 }
 
 .person {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   width: 60vw;
   height: 7vh;
   padding: 5px 20px;
-  margin-bottom: 5px;
-  border: 2px solid black;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
   font-size: 30px;
-  color: rgb(232, 232, 232);
+  color: var(--text-light);
   background: linear-gradient(
     to right,
-    #228b22 0%,
-    #228b22 0%,
-    #434343 0%,
-    #434343 100%
+    var(--green) 0%,
+    var(--green) 0%,
+    var(--track) 0%,
+    var(--track) 100%
   );
   transition: background 0.3s;
 }
@@ -49,71 +71,56 @@ body {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-.totalInput {
-  font-size: 18px;
-  width: 80px;
-  text-align: center;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.addBtn {
-  width: 100%;
-  margin-top: 10px;
-  padding: 10px;
-  color: white;
-  font-size: 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.plusBtn {
-  background-color: #228b22;
-  border: none;
-  color: white;
-  font-size: 20px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.removeBtn {
-  background-color: rgb(159, 0, 0);
-  border: none;
-  color: white;
-  font-size: 20px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-left: 20px;
-  flex: 0 0 auto;
+  gap: var(--gap);
 }
 
 button {
-  background-color: #228b22;
+  background-color: var(--green);
+  color: #fff;
   border: none;
-  color: white;
-  text-align: center;
+  border-radius: var(--radius);
+  cursor: pointer;
   font-size: 16px;
   padding: 6px 12px;
-  border-radius: 5px;
-  cursor: pointer;
 }
 
-#editBtn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-}
-
+#editBtn,
 #closeBtn {
   position: fixed;
   top: 20px;
   right: 20px;
+}
+
+#editor button {
+  position: static;
+  margin-left: 5px;
+}
+
+.plusBtn {
+  background-color: var(--green);
+  font-size: 20px;
+  padding: 5px 10px;
+}
+
+.removeBtn {
+  background-color: var(--danger);
+  font-size: 20px;
+  padding: 5px 10px;
+  margin-left: 20px;
+  flex: 0 0 auto;
+}
+
+.addBtn,
+#addPlayerBtn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: var(--green);
+  font-size: 20px;
+}
+
+.close {
+  background-color: var(--danger);
 }
 
 #editor {
@@ -122,86 +129,57 @@ button {
   top: 10%;
   transform: translateX(-50%);
   width: 50vw;
-  height: auto;
-  background-color: white;
+  background-color: var(--bg-overlay);
   padding: 15px;
-  border: 2px solid black;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
 }
 
-#editor button {
-  position: static;
-  margin-left: 5px;
+.nameInput,
+.numberInput,
+.totalInput {
+  font-size: 30px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
-.close {
-  background-color: rgb(159, 0, 0);
-}
-
-#addPlayerBtn {
-  background-color: grey;
-}
-
-.progressBar {
-  background: #ddd;
-  border-radius: 5px;
-  overflow: hidden;
-  margin: 5px 0;
-  height: 25px;
-  position: relative;
-}
-
-.progressFill {
-  background: #228b22;
-  height: 100%;
-  width: 0%;
-  transition: width 0.3s;
-}
-
-.progressLabel {
-  position: absolute;
-  left: 10px;
-  top: 3px;
-  font-size: 14px;
-  color: white;
-  font-weight: bold;
-}
-
-#beerMugContainer {
+.numberInput {
+  width: 80px;
   text-align: center;
-  margin-top: 10px;
 }
 
-#beerMug {
-  width: 120px;
-  height: auto;
+.totalInput {
+  font-size: 18px;
+  width: 80px;
+  text-align: center;
 }
 
 #totalProgress {
   width: 80vw;
   height: 10vh;
-  background-color: white;
+  background-color: #fff;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
+  display: flex;
+  align-items: center;
   justify-content: center;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
 }
 
-#totalProgress h2 {
-  margin: 0;
-  font-size: 18px;
-  color: rgb(232, 232, 232);
-  z-index: 1;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
+#totalProgress h2,
 #totalProgressLabel {
   margin: 0;
-  font-size: 18px;
-  font-weight: bold;
-  color: black;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--text-light);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+#beerMugContainer {
+  text-align: center;
+  margin-top: 10px;
 }
 
 #beerMug {
@@ -252,10 +230,4 @@ button {
 }
 .shake7 {
   animation: shake 0.2s infinite ease-in-out;
-}
-
-.nameInput {
-  font-size: 30px;
-  border: 1px solid #ccc;
-  padding: 2px 6px;
 }

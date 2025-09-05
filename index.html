@@ -7,17 +7,19 @@
     <link rel="stylesheet" href="styles.css" />
     <script src="script.js" defer></script>
     <link rel="icon" type="image/x-icon" href="BeerBoardLogo.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
   </head>
 
   <body>
     <div id="beerMugContainer">
       <img id="beerMug" src="beers/beer1.png" alt="Beer Mug" />
     </div>
-
-    <!-- <button id="editBtn" onclick="openEditor(true)">✏️ Edit</button>
-    <button id="closeBtn" onclick="closeEditor()" style="display: none">
-      ❌ Close
-    </button> -->
 
     <div id="totalProgress">
       <h2 id="totalProgressLabel">Total: 0</h2>
@@ -36,18 +38,6 @@
       <button id="addPlayerInline" class="addBtn">➕ Add Player</button>
     </div>
 
-    <div id="editor" style="display: none">
-      <h2>Edit Leaderboard</h2>
-      <div id="editorList"></div>
-
-      <h3>Add Player</h3>
-      <input type="text" id="playerName" placeholder="Name" />
-      <input type="number" id="playerScore" placeholder="Score" />
-      <button id="addPlayerBtn">➕ Add</button>
-
-      <h2>Set Total Drinks</h2>
-      <input type="number" id="total" placeholder="Total" />
-    </div>
     <audio id="addBeerSound" src="mp3/beengle1.mp3" preload="auto"></audio>
     <audio id="addPlayerSound" src="mp3/beengle2.mp3" preload="auto"></audio>
   </body>
