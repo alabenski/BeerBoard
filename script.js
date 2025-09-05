@@ -1,5 +1,6 @@
 let totalDrinks = 0;
 let goalAnnounced = false;
+let firstTotalClick = true;
 
 let confettiActive = false;
 let confettiParticles = [];
@@ -10,7 +11,6 @@ function initConfetti() {
   const canvas = document.getElementById("confettiCanvas");
   confettiCtx = canvas.getContext("2d");
 
-  // resize to full screen
   function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -20,7 +20,7 @@ function initConfetti() {
 }
 
 function startConfetti() {
-  if (confettiActive) return; // already running
+  if (confettiActive) return;
   confettiActive = true;
   confettiParticles = [];
 
@@ -30,8 +30,8 @@ function startConfetti() {
     confettiParticles.push({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight - window.innerHeight,
-      r: Math.random() * 6 + 4, // size
-      d: Math.random() * 0.5 + 0.5, // density
+      r: Math.random() * 6 + 4,
+      d: Math.random() * 0.5 + 0.5,
       color: colors[Math.floor(Math.random() * colors.length)],
       tilt: Math.random() * 10 - 10,
       tiltAngleIncrement: Math.random() * 0.07 + 0.05,
@@ -116,7 +116,7 @@ function checkTotalReached(sum, total) {
     document.getElementById("totalProgress")?.classList.add("goalFlash");
     $$(".plusBtn").forEach((b) => (b.disabled = true));
 
-    startConfetti(); // 🎉 start raining confetti
+    startConfetti();
   }
 
   if (!reached && goalAnnounced) {
@@ -124,7 +124,7 @@ function checkTotalReached(sum, total) {
     document.getElementById("totalProgress")?.classList.remove("goalFlash");
     $$(".plusBtn").forEach((b) => (b.disabled = false));
 
-    stopConfetti(); // 🛑 stop confetti when going below goal
+    stopConfetti();
   }
 }
 
@@ -135,7 +135,11 @@ function updateTotalProgressComputed(sum, total) {
     const percent = total > 0 ? (sum / total) * 100 : 0;
     totalBar.style.background = personFillGradient(percent);
   }
-  if (label) label.textContent = `Total: ${sum} / ${total}`;
+  if (firstTotalClick) {
+    if (label) label.textContent = `Total: ${total} (click to edit)`;
+  } else {
+    if (label) label.textContent = `Total: ${sum} / ${total}`;
+  }
 }
 
 function updateBeerMugComputed(sum, total) {
@@ -147,7 +151,14 @@ function updateBeerMugComputed(sum, total) {
     mug.className = "";
     return;
   }
-  const fullness = Math.min(7, Math.max(1, Math.round((sum / total) * 7)));
+
+  const frames = 48;
+
+  const fullness = Math.min(
+    frames,
+    Math.max(1, Math.round((sum / total) * frames))
+  );
+
   mug.src = `beers/beer${fullness}.png`;
   mug.className = fullness > 1 ? `shake${fullness}` : "";
 }
@@ -328,6 +339,8 @@ function makeTotalEditable() {
   if (!label) return;
 
   label.onclick = () => {
+    firstTotalClick = false;
+
     const input = document.createElement("input");
     input.type = "number";
     input.value = totalDrinks;
@@ -408,4 +421,31 @@ document.addEventListener("DOMContentLoaded", () => {
   initConfetti();
   makeTotalEditable();
   refreshBoard();
+});
+
+function toggleDropdown() {
+  const button = document.getElementById("settings");
+  const dropdown = document.getElementById("settingsDropdown");
+
+  button.classList.remove("spin", "spin-reverse");
+  void button.offsetWidth;
+
+  if (dropdown.style.display === "block") {
+    dropdown.style.display = "none";
+    button.classList.add("spin");
+  } else {
+    dropdown.style.display = "block";
+    button.classList.add("spin-reverse");
+  }
+}
+
+function setTheme(image) {
+  document.body.style.backgroundImage = `url("${image}")`;
+  document.getElementById("settingsDropdown").style.display = "none";
+}
+
+window.addEventListener("click", (e) => {
+  if (!e.target.closest(".settings-container")) {
+    document.getElementById("settingsDropdown").style.display = "none";
+  }
 });
