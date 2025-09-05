@@ -14,6 +14,14 @@
   src: url(Coors\ Script\ Regular.ttf);
 }
 
+.element {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.element::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
 html,
 body {
   height: 100%;
@@ -385,4 +393,12 @@ body {
 
 .meet-btn:hover {
   background: #ffcc00;
+}
+
+.hidebtn {
+  background-color: grey;
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  z-index: 2;
 }
