@@ -41,6 +41,7 @@ function updateTotalProgress() {
 
 function sortLeaderboard() {
   const scoreboard = document.querySelector(".scoreboard");
+  const addBtn = document.getElementById("addPlayerInline");
   const people = Array.from(scoreboard.querySelectorAll(".person"));
 
   people.sort((a, b) => {
@@ -51,7 +52,13 @@ function sortLeaderboard() {
     return scoreB - scoreA;
   });
 
-  people.forEach((p) => scoreboard.appendChild(p));
+  people.forEach((person) => {
+    if (addBtn) {
+      scoreboard.insertBefore(person, addBtn);
+    } else {
+      scoreboard.appendChild(person);
+    }
+  });
 }
 
 function refreshBoard() {
@@ -61,68 +68,68 @@ function refreshBoard() {
   updateBeerMug();
 }
 
-function openEditor(fromClick = false) {
-  if (fromClick) {
-    const sound = document.getElementById("editorSound");
-    sound.currentTime = 0;
-    sound.play().catch((err) => console.warn("Playback blocked:", err));
-  }
+// function openEditor(fromClick = false) {
+//   if (fromClick) {
+//     const sound = document.getElementById("editorSound");
+//     sound.currentTime = 0;
+//     sound.play().catch((err) => console.warn("Playback blocked:", err));
+//   }
 
-  document.getElementById("editBtn").style.display = "none";
-  document.getElementById("closeBtn").style.display = "block";
+//   document.getElementById("editBtn").style.display = "none";
+//   document.getElementById("closeBtn").style.display = "block";
 
-  const editor = document.getElementById("editor");
-  const editorList = document.getElementById("editorList");
-  editorList.innerHTML = "";
+//   const editor = document.getElementById("editor");
+//   const editorList = document.getElementById("editorList");
+//   editorList.innerHTML = "";
 
-  document.querySelectorAll(".person").forEach((person, idx) => {
-    const name = person.querySelector(".name").innerText;
-    const score = person.querySelector(".number").innerText;
+//   document.querySelectorAll(".person").forEach((person, idx) => {
+//     const name = person.querySelector(".name").innerText;
+//     const score = person.querySelector(".number").innerText;
 
-    const row = document.createElement("div");
-    row.style.marginBottom = "8px";
+//     const row = document.createElement("div");
+//     row.style.marginBottom = "8px";
 
-    const nameInput = document.createElement("input");
-    nameInput.type = "text";
-    nameInput.value = name;
-    nameInput.addEventListener("input", () => {
-      person.querySelector(".name").innerText = nameInput.value.trim() || "—";
-    });
+//     const nameInput = document.createElement("input");
+//     nameInput.type = "text";
+//     nameInput.value = name;
+//     nameInput.addEventListener("input", () => {
+//       person.querySelector(".name").innerText = nameInput.value.trim() || "—";
+//     });
 
-    const scoreInput = document.createElement("input");
-    scoreInput.type = "number";
-    scoreInput.value = score;
-    scoreInput.addEventListener("input", () => {
-      person.querySelector(".number").innerText =
-        scoreInput.value.trim() || "0";
-      refreshBoard();
-    });
+//     const scoreInput = document.createElement("input");
+//     scoreInput.type = "number";
+//     scoreInput.value = score;
+//     scoreInput.addEventListener("input", () => {
+//       person.querySelector(".number").innerText =
+//         scoreInput.value.trim() || "0";
+//       refreshBoard();
+//     });
 
-    const removeBtn = document.createElement("button");
-    removeBtn.textContent = "🗑 Remove";
-    removeBtn.style.backgroundColor = "rgb(159,0,0)";
-    removeBtn.addEventListener("click", () => {
-      person.remove();
-      openEditor();
-      refreshBoard();
-    });
+//     const removeBtn = document.createElement("button");
+//     removeBtn.textContent = "🗑 Remove";
+//     removeBtn.style.backgroundColor = "rgb(159,0,0)";
+//     removeBtn.addEventListener("click", () => {
+//       person.remove();
+//       openEditor();
+//       refreshBoard();
+//     });
 
-    row.appendChild(nameInput);
-    row.appendChild(scoreInput);
-    row.appendChild(removeBtn);
+//     row.appendChild(nameInput);
+//     row.appendChild(scoreInput);
+//     row.appendChild(removeBtn);
 
-    editorList.appendChild(row);
-  });
+//     editorList.appendChild(row);
+//   });
 
-  const totalInput = document.getElementById("total");
-  totalInput.value = totalDrinks;
-  totalInput.addEventListener("input", () => {
-    totalDrinks = parseInt(totalInput.value) || 0;
-    refreshBoard();
-  });
+//   const totalInput = document.getElementById("total");
+//   totalInput.value = totalDrinks;
+//   totalInput.addEventListener("input", () => {
+//     totalDrinks = parseInt(totalInput.value) || 0;
+//     refreshBoard();
+//   });
 
-  editor.style.display = "block";
-}
+//   editor.style.display = "block";
+// }
 
 function closeEditor() {
   document.getElementById("editor").style.display = "none";
@@ -165,14 +172,13 @@ function makeNameEditable(nameEl) {
 
     nameEl.replaceWith(input);
     input.focus();
-    input.select(); // 🔥 highlight all text immediately
+    input.select();
 
     function save() {
       const newName = input.value.trim() || "—";
       nameEl.innerText = newName;
       input.replaceWith(nameEl);
 
-      // re-enable editing for future clicks
       makeNameEditable(nameEl);
     }
 
@@ -184,7 +190,6 @@ function makeNameEditable(nameEl) {
 }
 
 function setupPerson(person) {
-  // name (left)
   let nameEl = person.querySelector(".name");
   if (!nameEl) {
     nameEl = document.createElement("p");
@@ -194,7 +199,6 @@ function setupPerson(person) {
   }
   makeNameEditable(nameEl);
 
-  // right-side (number + plus)
   let rightSide = person.querySelector(".right-side");
   if (!rightSide) {
     rightSide = document.createElement("div");
@@ -208,12 +212,11 @@ function setupPerson(person) {
     numberEl.className = "number";
     numberEl.innerText = "0";
   }
-  // ensure number lives inside rightSide (move it if needed)
+
   if (numberEl.parentElement !== rightSide) {
     rightSide.prepend(numberEl);
   }
 
-  // plus button (only one)
   if (!rightSide.querySelector(".plusBtn")) {
     const plus = document.createElement("button");
     plus.className = "plusBtn";
@@ -230,7 +233,6 @@ function setupPerson(person) {
     rightSide.appendChild(plus);
   }
 
-  // remove button (far right; only one)
   if (!person.querySelector(".removeBtn")) {
     const remove = document.createElement("button");
     remove.className = "removeBtn";
@@ -246,7 +248,6 @@ function setupPerson(person) {
 function makeTotalEditable() {
   const label = document.getElementById("totalProgressLabel");
   label.addEventListener("click", () => {
-    // current total is in global totalDrinks
     const input = document.createElement("input");
     input.type = "number";
     input.value = totalDrinks;
@@ -258,16 +259,13 @@ function makeTotalEditable() {
     function save() {
       totalDrinks = parseInt(input.value) || 0;
 
-      // rebuild the label
       const newLabel = document.createElement("h2");
       newLabel.id = "totalProgressLabel";
       newLabel.innerText = `Total: ${totalDrinks}`;
       input.replaceWith(newLabel);
 
-      // re-attach click-to-edit
       makeTotalEditable();
 
-      // refresh progress visuals
       refreshBoard();
     }
 
@@ -279,10 +277,8 @@ function makeTotalEditable() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 1) Initialize existing players (adds right-side, +, remove, and name editing)
   document.querySelectorAll(".person").forEach(setupPerson);
 
-  // 2) Add Player (single listener)
   const addBtn = document.getElementById("addPlayerBtn");
   if (addBtn) {
     addBtn.addEventListener("click", () => {
@@ -290,7 +286,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const score = document.getElementById("playerScore").value.trim();
       if (!name || !score) return;
 
-      // Build the new person row
       const personDiv = document.createElement("div");
       personDiv.className = "person";
       personDiv.innerHTML = `
@@ -298,25 +293,41 @@ document.addEventListener("DOMContentLoaded", () => {
         <p class="number">${score}</p>
       `;
 
-      // Insert, then let setupPerson do the wiring (right-side/+ /remove /editable name)
       document.querySelector(".scoreboard").appendChild(personDiv);
       setupPerson(personDiv);
 
-      // Clear form
       document.getElementById("playerName").value = "";
       document.getElementById("playerScore").value = "";
 
-      // If you want the editor to pop back open after adding, keep this:
-      openEditor(); // or remove this line if you don't want it to auto-open
+      openEditor();
 
-      // Update sort/progress/mug/total bar
       refreshBoard();
     });
   }
 
-  // 3) Make the total in the progress bar editable
+  const addInline = document.getElementById("addPlayerInline");
+  addInline.addEventListener("click", () => {
+    const personDiv = document.createElement("div");
+    personDiv.className = "person";
+    personDiv.innerHTML = `
+      <p class="name">New Player</p>
+      <p class="number">0</p>
+    `;
+
+    addInline.before(personDiv);
+
+    setupPerson(personDiv);
+
+    const sound = document.getElementById("addPlayerSound");
+    if (sound) {
+      sound.currentTime = 0;
+      sound.play().catch((err) => console.warn("Playback blocked:", err));
+    }
+
+    refreshBoard();
+  });
+
   makeTotalEditable();
 
-  // 4) Initial sort/progress/mug update
   refreshBoard();
 });

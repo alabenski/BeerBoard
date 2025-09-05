@@ -5,20 +5,24 @@
 }
 
 body {
-  background-color: var(--background-color);
+  background-image: url("background.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .scoreboard {
   display: grid;
   position: absolute;
   margin-top: 40px;
+  top: 35vh;
   left: 50%;
   transform: translateX(-50%);
 }
 
 .person {
   display: flex;
-  justify-content: space-between; /* name left, rightSide+remove right */
+  justify-content: space-between;
   align-items: center;
   width: 60vw;
   height: 7vh;
@@ -54,6 +58,17 @@ body {
   text-align: center;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.addBtn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  color: white;
+  font-size: 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .plusBtn {
@@ -163,7 +178,7 @@ button {
 
 #totalProgress {
   width: 80vw;
-  height: 5vh;
+  height: 10vh;
   background-color: white;
   position: absolute;
   left: 50%;
@@ -196,7 +211,6 @@ button {
   transition: transform 0.2s ease;
 }
 
-/* Shake animation */
 @keyframes shake {
   0% {
     transform: rotate(0deg);
@@ -218,7 +232,6 @@ button {
   }
 }
 
-/* Shake intensity levels */
 .shake1 {
   animation: shake 1s infinite ease-in-out;
 }
