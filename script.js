@@ -163,6 +163,96 @@ function updateBeerMugComputed(sum, total) {
   mug.className = fullness > 1 ? `shake${fullness}` : "";
 }
 
+function ensureRow(person) {
+  if (
+    person.parentElement &&
+    person.parentElement.classList.contains("player-row")
+  ) {
+    return person.parentElement;
+  }
+  const row = document.createElement("div");
+  row.className = "player-row";
+  const tcol = document.createElement("div");
+  tcol.className = "tcol";
+  person.before(row);
+  row.appendChild(tcol);
+  row.appendChild(person);
+  return row;
+}
+
+function setTrophyForRow(row, rankIndex) {
+  const tcol = row.querySelector(".tcol");
+  if (!tcol) return;
+
+  tcol.innerHTML = "";
+
+  if (rankIndex < 3) {
+    const img = document.createElement("img");
+    img.src = `trophies/${rankIndex + 1}.png`;
+    img.alt = `${rankIndex + 1} place`;
+    tcol.appendChild(img);
+  } else {
+    const spacer = document.createElement("div");
+    spacer.style.width = "40px";
+    spacer.style.height = "1px";
+    tcol.appendChild(spacer);
+  }
+}
+
+function wrapInitialPeople() {
+  const scoreboard = document.querySelector(".scoreboard");
+  if (!scoreboard) return;
+  $$(".person", scoreboard).forEach(ensureRow); // uses your existing ensureRow
+}
+
+function updateAllTrophies() {
+  const rows = Array.from(document.querySelectorAll(".scoreboard .player-row"));
+  rows.forEach((row, i) => {
+    const tcol = row.querySelector(".tcol");
+    if (!tcol) return;
+
+    // Hard reset the left column
+    tcol.innerHTML = "";
+
+    if (i < 3) {
+      const img = document.createElement("img");
+      img.src = `trophies/${i + 1}.png`; // 1.png, 2.png, 3.png
+      img.alt = `${i + 1} place`;
+      tcol.appendChild(img);
+    } else {
+      const spacer = document.createElement("div");
+      spacer.style.width = "40px";
+      spacer.style.height = "1px";
+      tcol.appendChild(spacer);
+    }
+  });
+}
+
+function updateAllTrophiesByDom(scoreboard) {
+  const rows = Array.from(scoreboard.querySelectorAll(".player-row"));
+  rows.forEach((row, i) => {
+    let tcol = row.querySelector(".tcol");
+    if (!tcol) {
+      tcol = document.createElement("div");
+      tcol.className = "tcol";
+      row.prepend(tcol);
+    }
+    tcol.innerHTML = "";
+
+    if (i < 3) {
+      const img = document.createElement("img");
+      img.src = `trophies/${i + 1}.png`;
+      img.alt = `${i + 1} place`;
+      tcol.appendChild(img);
+    } else {
+      const spacer = document.createElement("div");
+      spacer.style.width = "40px";
+      spacer.style.height = "1px";
+      tcol.appendChild(spacer);
+    }
+  });
+}
+
 function sortLeaderboard() {
   const scoreboard = document.querySelector(".scoreboard");
   if (!scoreboard) return;
@@ -170,11 +260,48 @@ function sortLeaderboard() {
   const addBtn = document.getElementById("addPlayerInline");
   const people = Array.from(scoreboard.querySelectorAll(".person"));
 
-  people.sort((a, b) => scoreOf(b) - scoreOf(a));
+  const rows = people.map(ensureRow);
 
-  people.forEach((person) => {
-    if (addBtn) scoreboard.insertBefore(person, addBtn);
-    else scoreboard.appendChild(person);
+  const first = new Map();
+  rows.forEach((row) => first.set(row, row.getBoundingClientRect()));
+
+  const sortedRows = people
+    .slice()
+    .sort((a, b) => scoreOf(b) - scoreOf(a))
+    .map((person) => ensureRow(person));
+
+  sortedRows.forEach((row, i) => {
+    setTrophyForRow(row, i);
+    if (addBtn) scoreboard.insertBefore(row, addBtn);
+    else scoreboard.appendChild(row);
+  });
+
+  sortedRows.forEach((row) => {
+    const last = row.getBoundingClientRect();
+    const f = first.get(row);
+    if (!f) return;
+
+    const dy = f.top - last.top;
+    if (dy) {
+      const style = row.style;
+      const prevTransition = style.transition;
+      style.transition = "none";
+      style.transform = `translateY(${dy}px)`;
+
+      row.getBoundingClientRect();
+
+      style.transition = "transform 300ms ease";
+      style.transform = "translateY(0)";
+
+      row.addEventListener(
+        "transitionend",
+        () => {
+          style.transition = prevTransition || "";
+          style.transform = "";
+        },
+        { once: true }
+      );
+    }
   });
 }
 
@@ -316,12 +443,16 @@ function setupPerson(person) {
     remove.className = "removeBtn";
     remove.textContent = "❌";
     remove.addEventListener("click", () => {
-      person.remove();
+      if (person.parentElement.classList.contains("player-row")) {
+        person.parentElement.remove();
+      } else {
+        person.remove();
+      }
 
       const sound = document.getElementById("removePlayerSound");
       if (sound) {
         sound.currentTime = 0;
-        sound.play().catch((err) => console.warn("Playback blocked:", err));
+        sound.play().catch(() => {});
       }
 
       refreshBoard();
@@ -370,8 +501,49 @@ function makeTotalEditable() {
   };
 }
 
+function toggleDropdown() {
+  const button = document.getElementById("settings");
+  const dropdown = document.getElementById("settingsDropdown");
+
+  button.classList.remove("spin", "spin-reverse");
+  void button.offsetWidth;
+
+  if (dropdown.style.display === "block") {
+    dropdown.style.display = "none";
+    button.classList.add("spin");
+  } else {
+    dropdown.style.display = "block";
+    button.classList.add("spin-reverse");
+  }
+}
+
+function setTheme(image) {
+  document.body.style.backgroundImage = `url("${image}")`;
+  document.getElementById("settingsDropdown").style.display = "none";
+}
+
+window.addEventListener("click", (e) => {
+  if (!e.target.closest(".settings-container")) {
+    document.getElementById("settingsDropdown").style.display = "none";
+  }
+});
+
+function hideTopBar() {
+  const button = document.getElementById("hideHeader");
+  const header = document.getElementById("header");
+
+  header.classList.toggle("hidden");
+  button.classList.toggle("rotated");
+
+  document.body.classList.toggle(
+    "header-hidden",
+    header.classList.contains("hidden")
+  );
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   $$(".person").forEach(setupPerson);
+  wrapInitialPeople();
 
   const addBtn = document.getElementById("addPlayerBtn");
   if (addBtn) {
@@ -422,43 +594,3 @@ document.addEventListener("DOMContentLoaded", () => {
   makeTotalEditable();
   refreshBoard();
 });
-
-function toggleDropdown() {
-  const button = document.getElementById("settings");
-  const dropdown = document.getElementById("settingsDropdown");
-
-  button.classList.remove("spin", "spin-reverse");
-  void button.offsetWidth;
-
-  if (dropdown.style.display === "block") {
-    dropdown.style.display = "none";
-    button.classList.add("spin");
-  } else {
-    dropdown.style.display = "block";
-    button.classList.add("spin-reverse");
-  }
-}
-
-function setTheme(image) {
-  document.body.style.backgroundImage = `url("${image}")`;
-  document.getElementById("settingsDropdown").style.display = "none";
-}
-
-window.addEventListener("click", (e) => {
-  if (!e.target.closest(".settings-container")) {
-    document.getElementById("settingsDropdown").style.display = "none";
-  }
-});
-
-function hideTopBar() {
-  const button = document.getElementById("hideHeader");
-  const header = document.getElementById("header");
-
-  header.classList.toggle("hidden");
-  button.classList.toggle("rotated");
-
-  document.body.classList.toggle(
-    "header-hidden",
-    header.classList.contains("hidden")
-  );
-}

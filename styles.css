@@ -45,6 +45,11 @@ body {
   background-attachment: fixed;
   margin: 0;
   padding-top: 170px;
+  transition: padding-top 0.3s ease-in-out;
+}
+
+body.header-hidden {
+  padding-top: 60px;
 }
 
 p,
@@ -141,6 +146,7 @@ button {
   padding: 10px;
   background-color: var(--green);
   font-size: 20px;
+  margin-bottom: 100px;
 }
 
 .close {
@@ -443,4 +449,58 @@ body:not(.header-hidden) #hideHeader {
 
 .meet-btn:hover {
   background: #ffcc00;
+}
+
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 5px;
+  will-change: transform;
+}
+
+.trophy {
+  width: 40px;
+  height: auto;
+  flex: 0 0 40px;
+}
+
+.trophy-spacer {
+  width: 40px;
+  height: 1px;
+  flex: 0 0 40px;
+  visibility: hidden;
+}
+
+.tcol {
+  width: 40px;
+  flex: 0 0 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tcol img {
+  width: 40px;
+  height: auto;
+}
+
+.row-anim {
+  transition: transform 300ms ease;
+  will-change: transform;
+}
+
+.trophy-swap {
+  animation: trophyPop 200ms ease;
+}
+@keyframes trophyPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
