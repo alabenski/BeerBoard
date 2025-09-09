@@ -15,32 +15,32 @@
       rel="stylesheet"
     />
   </head>
-  <canvas id="confettiCanvas"></canvas>
+  <body>
+    <canvas id="confettiCanvas"></canvas>
 
-  <header class="topbar">
-    <img src="BeerBoardLogo.png" alt="BeerBoard Logo" class="logo" />
-    <h1 class="site-title">Beer Board ™</h1>
+    <header class="topbar" id="header">
+      <img src="BeerBoardLogo.png" alt="BeerBoard Logo" class="logo" />
+      <h1 class="site-title">Beer Board ™</h1>
 
-    <div class="topbar-right">
-      <button class="meet-btn" onclick="window.location.href='founders.html'">
-        Meet the Founders
-      </button>
-
-      <div class="settings-container">
-        <button class="settings-btn" id="settings" onclick="toggleDropdown()">
-          <img src="settings.png" alt="Settings" />
+      <div class="topbar-right">
+        <button class="meet-btn" onclick="window.location.href='founders.html'">
+          Meet the Founders
         </button>
-        <div class="dropdown" id="settingsDropdown">
-          <button onclick="setTheme('background.jpg')">Background 1</button>
-          <button onclick="setTheme('background2.jpg')">Background 2</button>
+
+        <div class="settings-container">
+          <button class="settings-btn" id="settings" onclick="toggleDropdown()">
+            <img src="settings.png" alt="Settings" />
+          </button>
+          <div class="dropdown" id="settingsDropdown">
+            <button onclick="setTheme('background.jpg')">Background 1</button>
+            <button onclick="setTheme('background2.jpg')">Background 2</button>
+          </div>
         </div>
       </div>
-    </div>
+    </header>
 
-    <button class="hidebtn">^</button>
-  </header>
+    <button class="hidebtn" id="hideHeader" onclick="hideTopBar()">▲</button>
 
-  <body>
     <div id="beerMugContainer">
       <img id="beerMug" src="beers/beer1.png" alt="Beer Mug" />
     </div>

@@ -449,3 +449,16 @@ window.addEventListener("click", (e) => {
     document.getElementById("settingsDropdown").style.display = "none";
   }
 });
+
+function hideTopBar() {
+  const button = document.getElementById("hideHeader");
+  const header = document.getElementById("header");
+
+  header.classList.toggle("hidden");
+  button.classList.toggle("rotated");
+
+  document.body.classList.toggle(
+    "header-hidden",
+    header.classList.contains("hidden")
+  );
+}
