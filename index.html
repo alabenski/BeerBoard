@@ -15,30 +15,32 @@
       rel="stylesheet"
     />
   </head>
-  <canvas id="confettiCanvas"></canvas>
+  <body>
+    <canvas id="confettiCanvas"></canvas>
 
-  <header class="topbar">
-    <img src="BeerBoardLogo.png" alt="BeerBoard Logo" class="logo" />
-    <h1 class="site-title">Beer Board ™</h1>
+    <header class="topbar" id="header">
+      <img src="BeerBoardLogo.png" alt="BeerBoard Logo" class="logo" />
+      <h1 class="site-title">Beer Board ™</h1>
 
-    <div class="topbar-right">
-      <button class="meet-btn" onclick="window.location.href='founders.html'">
-        Meet the Founders
-      </button>
-
-      <div class="settings-container">
-        <button class="settings-btn" id="settings" onclick="toggleDropdown()">
-          <img src="settings.png" alt="Settings" />
+      <div class="topbar-right">
+        <button class="meet-btn" onclick="window.location.href='founders.html'">
+          Meet the Founders
         </button>
-        <div class="dropdown" id="settingsDropdown">
-          <button onclick="setTheme('background.jpg')">Background 1</button>
-          <button onclick="setTheme('background2.jpg')">Background 2</button>
+
+        <div class="settings-container">
+          <button class="settings-btn" id="settings" onclick="toggleDropdown()">
+            <img src="settings.png" alt="Settings" />
+          </button>
+          <div class="dropdown" id="settingsDropdown">
+            <button onclick="setTheme('background.jpg')">Background 1</button>
+            <button onclick="setTheme('background2.jpg')">Background 2</button>
+          </div>
         </div>
       </div>
-    </div>
-  </header>
+    </header>
 
-  <body>
+    <button class="hidebtn" id="hideHeader" onclick="hideTopBar()">▲</button>
+
     <div id="beerMugContainer">
       <img id="beerMug" src="beers/beer1.png" alt="Beer Mug" />
     </div>
@@ -46,15 +48,20 @@
     <div id="totalProgress">
       <h2 id="totalProgressLabel">Total: 0</h2>
     </div>
-
     <div class="scoreboard">
-      <div class="person">
-        <p class="name">Name 1</p>
-        <p class="number">0</p>
+      <div class="player-row">
+        <div class="tcol"></div>
+        <div class="person">
+          <p class="name">Player 1</p>
+          <p class="number">0</p>
+        </div>
       </div>
-      <div class="person">
-        <p class="name">Name 2</p>
-        <p class="number">0</p>
+      <div class="player-row">
+        <div class="tcol"></div>
+        <div class="person">
+          <p class="name">Player 2</p>
+          <p class="number">0</p>
+        </div>
       </div>
 
       <button id="addPlayerInline" class="addBtn">➕ Add Player</button>
