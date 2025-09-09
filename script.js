@@ -148,19 +148,30 @@ function updateBeerMugComputed(sum, total) {
 
   if (total <= 0) {
     mug.src = "beers/beer1.png";
-    mug.className = "";
+    mug.classList.remove("shaking");
+    mug.style.removeProperty("--amp");
+    mug.style.removeProperty("--dur");
     return;
   }
 
   const frames = 48;
-
-  const fullness = Math.min(
-    frames,
-    Math.max(1, Math.round((sum / total) * frames))
-  );
-
+  const percent = Math.max(0, Math.min(1, sum / total));
+  const fullness = Math.min(frames, Math.max(1, Math.round(percent * frames)));
   mug.src = `beers/beer${fullness}.png`;
-  mug.className = fullness > 1 ? `shake${fullness}` : "";
+
+  // map progress -> amplitude (in degrees) and speed (duration)
+  // tweak these to taste
+  const minAmp = 1; // deg
+  const maxAmp = 8; // deg
+  const amp = minAmp + (maxAmp - minAmp) * percent;
+
+  const maxSpeed = 0.25; // s (fast at 100%)
+  const minSpeed = 0.9; // s (slow at 0%)
+  const dur = minSpeed - (minSpeed - maxSpeed) * percent;
+
+  mug.style.setProperty("--amp", `${amp}deg`);
+  mug.style.setProperty("--dur", `${dur}s`);
+  mug.classList.toggle("shaking", percent > 0);
 }
 
 function ensureRow(person) {
@@ -202,7 +213,7 @@ function setTrophyForRow(row, rankIndex) {
 function wrapInitialPeople() {
   const scoreboard = document.querySelector(".scoreboard");
   if (!scoreboard) return;
-  $$(".person", scoreboard).forEach(ensureRow); // uses your existing ensureRow
+  $$(".person", scoreboard).forEach(ensureRow);
 }
 
 function updateAllTrophies() {
@@ -211,12 +222,11 @@ function updateAllTrophies() {
     const tcol = row.querySelector(".tcol");
     if (!tcol) return;
 
-    // Hard reset the left column
     tcol.innerHTML = "";
 
     if (i < 3) {
       const img = document.createElement("img");
-      img.src = `trophies/${i + 1}.png`; // 1.png, 2.png, 3.png
+      img.src = `trophies/${i + 1}.png`;
       img.alt = `${i + 1} place`;
       tcol.appendChild(img);
     } else {
@@ -416,10 +426,19 @@ function setupPerson(person) {
     plus.textContent = "+";
     plus.addEventListener("click", () => {
       const { sum, total } = computeTotals();
-
       if (total > 0 && sum >= total) return;
 
       numberEl.textContent = (parseInt(numberEl.textContent) || 0) + 1;
+
+      // ✅ trigger animation only on THIS button
+      plus.classList.add("pop");
+      plus.addEventListener(
+        "animationend",
+        () => {
+          plus.classList.remove("pop");
+        },
+        { once: true }
+      );
 
       const { sum: newSum, total: newTotal } = computeTotals();
 
@@ -443,11 +462,15 @@ function setupPerson(person) {
     remove.className = "removeBtn";
     remove.textContent = "❌";
     remove.addEventListener("click", () => {
-      if (person.parentElement.classList.contains("player-row")) {
-        person.parentElement.remove();
-      } else {
-        person.remove();
-      }
+      const row = person.parentElement.classList.contains("player-row")
+        ? person.parentElement
+        : person;
+
+      row.style.height = row.offsetHeight + "px";
+
+      row.getBoundingClientRect();
+
+      row.classList.add("removing");
 
       const sound = document.getElementById("removePlayerSound");
       if (sound) {
@@ -455,8 +478,16 @@ function setupPerson(person) {
         sound.play().catch(() => {});
       }
 
-      refreshBoard();
+      row.addEventListener(
+        "transitionend",
+        () => {
+          row.remove();
+          refreshBoard();
+        },
+        { once: true }
+      );
     });
+
     person.appendChild(remove);
   }
 
@@ -555,11 +586,22 @@ document.addEventListener("DOMContentLoaded", () => {
       const personDiv = document.createElement("div");
       personDiv.className = "person";
       personDiv.innerHTML = `
-        <p class="name">${name}</p>
-        <p class="number">${score}</p>
-      `;
+      <p class="name">${name}</p>
+      <p class="number">${score}</p>
+    `;
       document.querySelector(".scoreboard").appendChild(personDiv);
       setupPerson(personDiv);
+
+      // ✅ wrap into row + animate
+      const row = ensureRow(personDiv);
+      row.classList.add("adding");
+      row.addEventListener(
+        "animationend",
+        () => {
+          row.classList.remove("adding");
+        },
+        { once: true }
+      );
 
       document.getElementById("playerName").value = "";
       document.getElementById("playerScore").value = "";
@@ -574,11 +616,22 @@ document.addEventListener("DOMContentLoaded", () => {
       const personDiv = document.createElement("div");
       personDiv.className = "person";
       personDiv.innerHTML = `
-        <p class="name">New Player</p>
-        <p class="number">0</p>
-      `;
+      <p class="name">New Player</p>
+      <p class="number">0</p>
+    `;
       addInline.before(personDiv);
       setupPerson(personDiv);
+
+      // ✅ wrap into row + animate
+      const row = ensureRow(personDiv);
+      row.classList.add("adding");
+      row.addEventListener(
+        "animationend",
+        () => {
+          row.classList.remove("adding");
+        },
+        { once: true }
+      );
 
       const sound = document.getElementById("addPlayerSound");
       if (sound) {
