@@ -22,40 +22,22 @@
       <div class="topbar-container">
         <div class="brand">
           <img src="BeerBoardLogo.png" alt="BeerBoard Logo" class="logo" />
-          <div class="brand-text">
-            <h1 class="site-title">Beer Board ™</h1>
-            <p class="tagline">Friendly scoreboard for friendly competition</p>
-          </div>
+          <h1 class="site-title">Beer Board ™</h1>
         </div>
 
         <div class="actions">
-          <button
-            class="meet-btn"
-            onclick="window.location.href='founders.html'"
-          >
-            Meet the Founders
-          </button>
-
           <div class="settings-container">
-            <button
-              class="settings-btn"
-              id="settings"
-              onclick="toggleDropdown()"
-            >
-              Options
+            <button class="settings-btn" id="settings" onclick="toggleDropdown()">
+              Settings
             </button>
             <div class="dropdown" id="settingsDropdown">
               <button onclick="setTheme('background.jpg')">Background 1</button>
-              <button onclick="setTheme('background2.jpg')">
-                Background 2
-              </button>
+              <button onclick="setTheme('background2.jpg')">Background 2</button>
             </div>
           </div>
         </div>
       </div>
     </header>
-
-    <button class="hidebtn" id="hideHeader" onclick="hideTopBar()">▲</button>
 
     <div id="beerMugContainer">
       <img id="beerMug" src="beers/beer1.png" alt="Beer Mug" />
