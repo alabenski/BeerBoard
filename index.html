@@ -27,12 +27,20 @@
 
         <div class="actions">
           <div class="settings-container">
-            <button class="settings-btn" id="settings" onclick="toggleDropdown()">
+            <button
+              class="settings-btn"
+              id="settings"
+              onclick="toggleDropdown()"
+            >
               Settings
             </button>
             <div class="dropdown" id="settingsDropdown">
-              <button onclick="setTheme('background.jpg')">Background 1</button>
-              <button onclick="setTheme('background2.jpg')">Background 2</button>
+              <button onclick="setTheme('theme-gradient')">Dark Gradient (New)</button>
+              <button onclick="setTheme('theme-bokeh')">Warm Bokeh (New)</button>
+              <button onclick="setTheme('theme-wood')">Dark Wood (New)</button>
+              <hr />
+              <button onclick="setTheme('theme-original1')">Original: Background 1</button>
+              <button onclick="setTheme('theme-original2')">Original: Background 2</button>
             </div>
           </div>
         </div>

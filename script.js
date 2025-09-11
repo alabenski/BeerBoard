@@ -539,8 +539,27 @@ function toggleDropdown() {
   dropdown.classList.toggle("open", !isOpen);
 }
 
-function setTheme(image) {
-  document.body.style.backgroundImage = `url("${image}")`;
+const THEME_CLASSES = [
+  "theme-gradient",
+  "theme-bokeh",
+  "theme-wood",
+  "theme-original1",
+  "theme-original2",
+];
+
+function setTheme(themeClassOrImage) {
+  const body = document.body;
+
+  // If a class name was provided, toggle classes. Otherwise fall back to image URL support
+  if (THEME_CLASSES.includes(themeClassOrImage)) {
+    THEME_CLASSES.forEach((c) => body.classList.remove(c));
+    body.classList.add(themeClassOrImage);
+    body.style.removeProperty("background-image");
+  } else {
+    body.style.backgroundImage = `url("${themeClassOrImage}")`;
+    THEME_CLASSES.forEach((c) => body.classList.remove(c));
+  }
+
   const dd = document.getElementById("settingsDropdown");
   if (dd) dd.classList.remove("open");
 }
@@ -565,6 +584,11 @@ function hideTopBar() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Set a default theme if none selected yet
+  const hasTheme = THEME_CLASSES.some((c) => document.body.classList.contains(c));
+  if (!hasTheme) {
+    document.body.classList.add("theme-gradient");
+  }
   $$(".person").forEach(setupPerson);
   wrapInitialPeople();
 
