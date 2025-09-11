@@ -637,15 +637,19 @@ body:not(.header-hidden) #hideHeader {
 }
 
 .settings-btn {
-  background: none;
-  border: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-light);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  font-weight: 600;
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
 }
 
-.settings-btn img {
-  height: 50px;
-  width: 50px;
-  border-radius: 50%;
+.settings-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-light);
 }
 
 .dropdown {
