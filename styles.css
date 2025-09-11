@@ -523,7 +523,7 @@ button:focus {
   height: 120px;
   background: rgba(5, 16, 33, 0.95);
   backdrop-filter: blur(20px);
-  padding: 0 32px;
+  padding: 0;
   border-bottom: 1px solid var(--border);
   z-index: 10000;
   overflow: visible;
@@ -540,7 +540,7 @@ button:focus {
   height: 120px;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
