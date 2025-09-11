@@ -114,6 +114,10 @@ h2 {
   font-weight: 600;
   font-size: 16px;
   margin: 0;
+  cursor: text;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .person::before {
@@ -126,6 +130,7 @@ h2 {
   border-radius: var(--radius) 0 0 var(--radius);
   transition: width 0.3s ease;
   z-index: 0;
+  width: var(--fill, 0%);
 }
 
 .person > * {
@@ -133,20 +138,65 @@ h2 {
   z-index: 1;
 }
 
+.person .name,
+.person .number {
+  color: var(--text-light);
+}
+
+.person:hover .name,
+.person:hover .number {
+  text-decoration: underline dotted rgba(255, 255, 255, 0.25);
+  text-underline-offset: 3px;
+}
+
 .right-side {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 12px;
+  justify-content: flex-end;
+  width: 180px; /* fixed action column so names align across rows */
 }
 
 .number {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 16px; /* unify with .name for consistency */
+  font-weight: 600;
   color: var(--text-light);
-  min-width: 40px;
+  width: 56px;
+  min-width: 56px;
   text-align: center;
   margin: 0;
+  cursor: text;
+}
+
+/* Tip banner */
+.tip-banner {
+  width: min(90vw, 600px);
+  margin: 8px auto 0 auto;
+  padding: 10px 12px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(8px);
+  color: var(--text-muted);
+  font-size: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.tip-banner button {
+  background: transparent;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.tip-banner button:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-light);
+}
+
+#totalProgressLabel {
+  cursor: text;
 }
 
 button {
@@ -316,6 +366,7 @@ button:focus {
 
 .numberInput[type="number"] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 
 #totalProgress {

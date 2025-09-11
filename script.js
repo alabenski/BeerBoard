@@ -91,7 +91,8 @@ function personFillGradient(percent) {
   return `linear-gradient(to right, #228b22 ${percent}%, #434343 ${percent}%)`;
 }
 function setPersonFill(person, percent) {
-  person.style.background = personFillGradient(percent);
+  // Use CSS ::before width to avoid repainting layout and keep theme consistent
+  person.style.setProperty("--fill", `${percent}%`);
 }
 
 function updateProgressComputed(people, scores, total) {
@@ -646,4 +647,19 @@ document.addEventListener("DOMContentLoaded", () => {
   initConfetti();
   makeTotalEditable();
   refreshBoard();
+
+  // Show a one-time helpful tip to make interactions obvious
+  const TIP_KEY = "beerboard_tip_dismissed_v1";
+  const banner = document.getElementById("tipBanner");
+  const dismiss = document.getElementById("dismissTip");
+  if (banner && !localStorage.getItem(TIP_KEY)) {
+    banner.style.display = "block";
+  }
+  if (dismiss) {
+    dismiss.addEventListener("click", () => {
+      localStorage.setItem(TIP_KEY, "1");
+      const parent = dismiss.closest(".tip-banner");
+      if (parent) parent.style.display = "none";
+    });
+  }
 });
