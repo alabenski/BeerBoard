@@ -272,6 +272,12 @@ h2 {
   cursor: text;
 }
 
+/* Affordance: underline editable label on hover */
+#totalProgress:hover #totalProgressLabel {
+  text-decoration: underline dotted rgba(255, 255, 255, 0.25);
+  text-underline-offset: 3px;
+}
+
 button {
   background-color: var(--green);
   color: #fff;
