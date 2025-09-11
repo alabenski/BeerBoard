@@ -538,6 +538,23 @@ button:focus {
   transform: translateY(-100%);
 }
 
+/* New header layout */
+.topbar-container {
+  height: 120px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .hidebtn {
   position: fixed;
   top: var(--pad);
@@ -596,11 +613,23 @@ body:not(.header-hidden) #hideHeader {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.topbar-right {
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.tagline {
+  margin: 0;
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.actions {
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 16px;
 }
 
 .settings-container {
@@ -622,7 +651,7 @@ body:not(.header-hidden) #hideHeader {
 .dropdown {
   display: none;
   position: absolute;
-  top: 70px;
+  top: 56px;
   right: 0;
   background: var(--bg-card);
   backdrop-filter: blur(20px);
