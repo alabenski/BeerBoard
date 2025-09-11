@@ -534,19 +534,9 @@ function makeTotalEditable() {
 }
 
 function toggleDropdown() {
-  const button = document.getElementById("settings");
   const dropdown = document.getElementById("settingsDropdown");
-
-  button.classList.remove("spin", "spin-reverse");
-  void button.offsetWidth;
-
-  if (dropdown.style.display === "block") {
-    dropdown.style.display = "none";
-    button.classList.add("spin");
-  } else {
-    dropdown.style.display = "block";
-    button.classList.add("spin-reverse");
-  }
+  const isOpen = dropdown.classList.contains("open");
+  dropdown.classList.toggle("open", !isOpen);
 }
 
 function setTheme(image) {
@@ -556,7 +546,7 @@ function setTheme(image) {
 
 window.addEventListener("click", (e) => {
   if (!e.target.closest(".settings-container")) {
-    document.getElementById("settingsDropdown").style.display = "none";
+    document.getElementById("settingsDropdown").classList.remove("open");
   }
 });
 

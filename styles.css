@@ -523,9 +523,6 @@ button:focus {
   height: 120px;
   background: rgba(5, 16, 33, 0.95);
   backdrop-filter: blur(20px);
-  display: flex;
-  align-items: center;
-  gap: 24px;
   padding: 0 32px;
   border-bottom: 1px solid var(--border);
   z-index: 10000;
@@ -546,7 +543,9 @@ button:focus {
   padding: 0 24px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 24px;
+  width: 100%;
 }
 
 .brand {
@@ -626,7 +625,6 @@ body:not(.header-hidden) #hideHeader {
 }
 
 .actions {
-  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -653,7 +651,6 @@ body:not(.header-hidden) #hideHeader {
 }
 
 .dropdown {
-  display: none;
   position: absolute;
   top: 56px;
   right: 0;
@@ -665,6 +662,16 @@ body:not(.header-hidden) #hideHeader {
   box-shadow: var(--shadow-xl);
   border: 1px solid var(--border);
   min-width: 160px;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.dropdown.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
 }
 
 .dropdown button {
