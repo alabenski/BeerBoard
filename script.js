@@ -541,8 +541,8 @@ function toggleDropdown() {
 
 const THEME_CLASSES = [
   "theme-gradient",
-  "theme-bokeh",
-  "theme-wood",
+  "theme-amber",
+  "theme-berry",
   "theme-original1",
   "theme-original2",
 ];
@@ -585,7 +585,9 @@ function hideTopBar() {
 
 document.addEventListener("DOMContentLoaded", () => {
   // Set a default theme if none selected yet
-  const hasTheme = THEME_CLASSES.some((c) => document.body.classList.contains(c));
+  const hasTheme = THEME_CLASSES.some((c) =>
+    document.body.classList.contains(c)
+  );
   if (!hasTheme) {
     document.body.classList.add("theme-gradient");
   }
