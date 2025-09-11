@@ -1,16 +1,31 @@
 :root {
-  --green: #36b736;
-  --danger: #9f0000;
-  --text-light: rgb(232, 232, 232);
-  --border: #000;
-  --track: #434343;
-  --bg-overlay: #fff;
-  --radius: 6px;
-  --gap: 10px;
-  --header-h: 110px;
-  --border-h: 4px;
-  --pad: 10px;
-  --btn-h: 34px;
+  --green: #22c55e;
+  --green-dark: #16a34a;
+  --green-light: #4ade80;
+  --danger: #ef4444;
+  --danger-dark: #dc2626;
+  --warning: #f59e0b;
+  --text-light: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-dark: #1e293b;
+  --border: #334155;
+  --border-light: #475569;
+  --track: #475569;
+  --bg-overlay: #ffffff;
+  --bg-card: rgba(15, 23, 42, 0.8);
+  --bg-card-hover: rgba(15, 23, 42, 0.9);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --gap: 16px;
+  --header-h: 120px;
+  --border-h: 2px;
+  --pad: 16px;
+  --btn-h: 40px;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 @font-face {
@@ -30,18 +45,21 @@ body {
 }
 
 body {
-  font-family: "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+  font-family: "Inter", "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
   background-image: url("background.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
+  background-position: center;
   margin: 0;
-  padding-top: 170px;
+  padding-top: 180px;
   transition: padding-top 0.3s ease-in-out;
+  line-height: 1.6;
+  color: var(--text-light);
 }
 
 body.header-hidden {
-  padding-top: 60px;
+  padding-top: 80px;
 }
 
 p,
@@ -56,53 +74,110 @@ h2 {
 .scoreboard {
   display: grid;
   margin: 40px auto 0 auto;
-  gap: 5px;
-  width: fit-content;
+  gap: 12px;
+  width: min(90vw, 600px);
   position: static;
   transform: none;
   place-items: center;
+  padding: 0 var(--pad);
 }
 
 .person {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 60vw;
-  height: 7vh;
-  padding: 5px 20px;
-  border: 2px solid var(--border);
+  width: 100%;
+  min-height: 60px;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  font-size: 30px;
+  font-size: 18px;
+  font-weight: 500;
   color: var(--text-light);
-  background: linear-gradient(
-    to right,
-    var(--green) 0%,
-    var(--green) 0%,
-    var(--track) 0%,
-    var(--track) 100%
-  );
-  transition: background 0.3s;
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.person:hover {
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-light);
 }
 
 .name {
   flex: 1 1 auto;
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0;
+}
+
+.person::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--green) 0%, var(--green-light) 100%);
+  border-radius: var(--radius) 0 0 var(--radius);
+  transition: width 0.3s ease;
+  z-index: 0;
+}
+
+.person > * {
+  position: relative;
+  z-index: 1;
 }
 
 .right-side {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: var(--gap);
+  gap: 12px;
+}
+
+.number {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-light);
+  min-width: 40px;
+  text-align: center;
+  margin: 0;
 }
 
 button {
   background-color: var(--green);
   color: #fff;
   border: none;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 16px;
-  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+button:hover {
+  background-color: var(--green-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+button:focus {
+  outline: 2px solid var(--green-light);
+  outline-offset: 2px;
 }
 
 #editBtn,
@@ -119,26 +194,59 @@ button {
 
 .plusBtn {
   background-color: var(--green);
-  font-size: 20px;
-  padding: 5px 10px;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 8px 12px;
+  min-width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plusBtn:hover {
+  background-color: var(--green-dark);
+  transform: scale(1.05);
 }
 
 .removeBtn {
   background-color: var(--danger);
-  font-size: 20px;
-  padding: 5px 10px;
-  margin-left: 20px;
+  font-size: 16px;
+  padding: 8px 12px;
+  margin-left: 12px;
   flex: 0 0 auto;
+  min-width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.removeBtn:hover {
+  background-color: var(--danger-dark);
+  transform: scale(1.05);
 }
 
 .addBtn,
 #addPlayerBtn {
-  width: 60%;
-  margin-top: 10px;
-  padding: 10px;
+  width: 100%;
+  margin-top: 20px;
+  padding: 16px 24px;
   background-color: var(--green);
-  font-size: 20px;
+  font-size: 16px;
+  font-weight: 600;
   margin-bottom: 100px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.addBtn:hover,
+#addPlayerBtn:hover {
+  background-color: var(--green-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }
 
 .close {
@@ -177,26 +285,36 @@ button {
 }
 
 #totalProgress {
-  width: 80vw;
-  height: 10vh;
-  background-color: #fff;
+  width: min(90vw, 600px);
+  height: 80px;
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
   margin: 20px auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   position: static;
   transform: none;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+}
+
+#totalProgress:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-light);
 }
 
 #totalProgress h2,
 #totalProgressLabel {
   margin: 0;
-  font-size: 30px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--text-light);
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
 }
 
 #beerMugContainer {
@@ -292,16 +410,18 @@ button {
   top: 0;
   left: 0;
   width: 100%;
-  height: 110px;
-  background: #051021;
+  height: 120px;
+  background: rgba(5, 16, 33, 0.95);
+  backdrop-filter: blur(20px);
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 0 30px;
-  border-bottom: 4px solid var(--border);
+  gap: 24px;
+  padding: 0 32px;
+  border-bottom: 1px solid var(--border);
   z-index: 10000;
   overflow: visible;
   transition: transform 0.3s ease-in-out;
+  box-shadow: var(--shadow-lg);
 }
 
 .topbar.hidden {
@@ -358,11 +478,12 @@ body:not(.header-hidden) #hideHeader {
 .site-title {
   font-family: "Coors Script Regular", "Comic Sans MS", "Arial Black",
     sans-serif;
-  font-size: 65px;
+  font-size: 48px;
   font-weight: 700;
   color: var(--text-light);
   margin: 0;
   letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .topbar-right {
@@ -391,39 +512,55 @@ body:not(.header-hidden) #hideHeader {
 .dropdown {
   display: none;
   position: absolute;
-  top: 60px;
+  top: 70px;
   right: 0;
-  background: rgba(0, 0, 0, 0.9);
-  padding: 10px;
-  border-radius: 10px;
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  padding: 12px;
+  border-radius: var(--radius);
   z-index: 10001;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border);
+  min-width: 160px;
 }
 
 .dropdown button {
-  background: #444;
-  color: white;
+  background: transparent;
+  color: var(--text-light);
   border: none;
-  padding: 10px 20px;
+  padding: 12px 16px;
   cursor: pointer;
   width: 100%;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-align: left;
 }
 
 .dropdown button:hover {
-  background: #666;
+  background: var(--bg-card-hover);
+  color: var(--green-light);
 }
 
 .meet-btn {
-  background: #ffd700;
+  background: var(--warning);
   border: none;
-  padding: 12px 20px;
-  border-radius: 10px;
-  font-weight: bold;
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
+  color: var(--text-dark);
+  box-shadow: var(--shadow);
+  transition: all 0.2s ease;
 }
 
 .meet-btn:hover {
-  background: #ffcc00;
+  background: #d97706;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+  color: white;
 }
 
 .player-row {
@@ -520,4 +657,110 @@ body:not(.header-hidden) #hideHeader {
 
 .plusBtn.pop {
   animation: plusPop 0.25s ease;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .topbar {
+    height: 100px;
+    padding: 0 16px;
+    gap: 16px;
+  }
+  
+  .site-title {
+    font-size: 32px;
+  }
+  
+  .logo {
+    height: 80px;
+  }
+  
+  body {
+    padding-top: 160px;
+  }
+  
+  body.header-hidden {
+    padding-top: 60px;
+  }
+  
+  .scoreboard {
+    width: 95vw;
+    padding: 0 8px;
+  }
+  
+  .person {
+    padding: 12px 16px;
+    min-height: 50px;
+  }
+  
+  .name {
+    font-size: 14px;
+  }
+  
+  .number {
+    font-size: 18px;
+  }
+  
+  .plusBtn,
+  .removeBtn {
+    min-width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+  
+  #totalProgress {
+    width: 95vw;
+    height: 60px;
+  }
+  
+  #totalProgress h2,
+  #totalProgressLabel {
+    font-size: 20px;
+  }
+  
+  .topbar-right {
+    gap: 12px;
+  }
+  
+  .meet-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+  
+  .settings-btn img {
+    height: 40px;
+    width: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    height: 90px;
+    padding: 0 12px;
+  }
+  
+  .site-title {
+    font-size: 24px;
+  }
+  
+  .logo {
+    height: 60px;
+  }
+  
+  body {
+    padding-top: 140px;
+  }
+  
+  .person {
+    padding: 10px 12px;
+    min-height: 45px;
+  }
+  
+  .name {
+    font-size: 13px;
+  }
+  
+  .number {
+    font-size: 16px;
+  }
 }
