@@ -23,9 +23,12 @@
   --pad: 16px;
   --btn-h: 40px;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 @font-face {
@@ -45,7 +48,8 @@ body {
 }
 
 body {
-  font-family: "Inter", "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+  font-family: "Inter", "Roboto", system-ui, -apple-system, Segoe UI, Arial,
+    sans-serif;
   background-image: url("background.jpg");
   background-size: cover;
   background-repeat: no-repeat;
@@ -121,7 +125,7 @@ h2 {
 }
 
 .person::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -318,7 +322,8 @@ button:focus {
 .nameInput,
 .numberInput,
 .totalInput {
-  font-family: "Inter", "Roboto", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+  font-family: "Inter", "Roboto", system-ui, -apple-system, Segoe UI, Arial,
+    sans-serif;
   font-weight: 600;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -384,6 +389,8 @@ button:focus {
   transform: none;
   box-shadow: var(--shadow);
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 #totalProgress:hover {
@@ -400,6 +407,24 @@ button:focus {
   color: var(--text-light);
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   letter-spacing: 0.5px;
+}
+
+/* Match player fill style using ::before bar */
+#totalProgress::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  height: 100%;
+  width: var(--fill, 0%);
+  background: linear-gradient(90deg, var(--green) 0%, var(--green-light) 100%);
+  border-radius: var(--radius) 0 0 var(--radius);
+  transition: width 0.3s ease;
+  z-index: 0;
+}
+
+#totalProgress > * {
+  position: relative;
+  z-index: 1;
 }
 
 #beerMugContainer {
@@ -751,67 +776,67 @@ body:not(.header-hidden) #hideHeader {
     padding: 0 16px;
     gap: 16px;
   }
-  
+
   .site-title {
     font-size: 32px;
   }
-  
+
   .logo {
     height: 80px;
   }
-  
+
   body {
     padding-top: 160px;
   }
-  
+
   body.header-hidden {
     padding-top: 60px;
   }
-  
+
   .scoreboard {
     width: 95vw;
     padding: 0 8px;
   }
-  
+
   .person {
     padding: 12px 16px;
     min-height: 50px;
   }
-  
+
   .name {
     font-size: 14px;
   }
-  
+
   .number {
     font-size: 18px;
   }
-  
+
   .plusBtn,
   .removeBtn {
     min-width: 36px;
     height: 36px;
     font-size: 14px;
   }
-  
+
   #totalProgress {
     width: 95vw;
     height: 60px;
   }
-  
+
   #totalProgress h2,
   #totalProgressLabel {
     font-size: 20px;
   }
-  
+
   .topbar-right {
     gap: 12px;
   }
-  
+
   .meet-btn {
     padding: 8px 16px;
     font-size: 12px;
   }
-  
+
   .settings-btn img {
     height: 40px;
     width: 40px;
@@ -823,28 +848,28 @@ body:not(.header-hidden) #hideHeader {
     height: 90px;
     padding: 0 12px;
   }
-  
+
   .site-title {
     font-size: 24px;
   }
-  
+
   .logo {
     height: 60px;
   }
-  
+
   body {
     padding-top: 140px;
   }
-  
+
   .person {
     padding: 10px 12px;
     min-height: 45px;
   }
-  
+
   .name {
     font-size: 13px;
   }
-  
+
   .number {
     font-size: 16px;
   }

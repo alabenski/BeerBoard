@@ -134,7 +134,7 @@ function updateTotalProgressComputed(sum, total) {
   const label = document.getElementById("totalProgressLabel");
   if (totalBar) {
     const percent = total > 0 ? (sum / total) * 100 : 0;
-    totalBar.style.background = personFillGradient(percent);
+    totalBar.style.setProperty("--fill", `${percent}%`);
   }
   if (firstTotalClick) {
     if (label) label.textContent = `Total: ${total} (click to edit)`;
