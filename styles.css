@@ -80,9 +80,16 @@ body.theme-gradient {
 
 /* 2) Amber Glow (warm beer-inspired gradient) */
 body.theme-amber {
-  background-image:
-    radial-gradient(900px 700px at 10% 10%, rgba(245, 158, 11, 0.12), transparent 60%),
-    radial-gradient(900px 700px at 90% 90%, rgba(234, 179, 8, 0.10), transparent 60%),
+  background-image: radial-gradient(
+      900px 700px at 10% 10%,
+      rgba(245, 158, 11, 0.12),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 700px at 90% 90%,
+      rgba(234, 179, 8, 0.1),
+      transparent 60%
+    ),
     linear-gradient(180deg, #0b1220 0%, #0a101b 60%, #070c16 100%);
   background-size: cover;
   background-repeat: no-repeat;
@@ -91,9 +98,16 @@ body.theme-amber {
 
 /* 3) Berry Night (cool-magenta accent gradient) */
 body.theme-berry {
-  background-image:
-    radial-gradient(900px 700px at 15% 85%, rgba(168, 85, 247, 0.12), transparent 60%),
-    radial-gradient(900px 700px at 85% 15%, rgba(236, 72, 153, 0.10), transparent 60%),
+  background-image: radial-gradient(
+      900px 700px at 15% 85%,
+      rgba(168, 85, 247, 0.12),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 700px at 85% 15%,
+      rgba(236, 72, 153, 0.1),
+      transparent 60%
+    ),
     linear-gradient(180deg, #0b1220 0%, #0a0f1b 60%, #070c16 100%);
   background-size: cover;
   background-repeat: no-repeat;
@@ -881,8 +895,10 @@ body:not(.header-hidden) #hideHeader {
 
 .trophy {
   width: 40px;
-  height: auto;
+  height: 40px;
   flex: 0 0 40px;
+  object-fit: contain;
+  display: block;
 }
 
 .trophy-spacer {
@@ -902,7 +918,9 @@ body:not(.header-hidden) #hideHeader {
 
 .tcol img {
   width: 40px;
-  height: auto;
+  height: 40px;
+  object-fit: contain;
+  display: block;
 }
 
 .row-anim {
