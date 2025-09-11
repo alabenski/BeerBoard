@@ -541,7 +541,8 @@ function toggleDropdown() {
 
 function setTheme(image) {
   document.body.style.backgroundImage = `url("${image}")`;
-  document.getElementById("settingsDropdown").style.display = "none";
+  const dd = document.getElementById("settingsDropdown");
+  if (dd) dd.classList.remove("open");
 }
 
 window.addEventListener("click", (e) => {
