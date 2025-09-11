@@ -437,6 +437,9 @@ button:focus {
   --amp: 0deg; /* amplitude */
   --dur: 1s; /* duration */
   transform-origin: 50% 100%;
+  width: min(160px, 18vw);
+  height: auto;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25));
 }
 
 /* turn on shaking */
@@ -531,7 +534,7 @@ button:focus {
 
 .topbar-container {
   height: 100%;
-  max-width: 1200px;
+  /* max-width: 1200px; */
   margin: 0 auto;
   padding: 0 16px;
   display: flex;
@@ -562,9 +565,15 @@ button:focus {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.actions { display: flex; align-items: center; gap: 12px; }
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
-.settings-container { position: relative; }
+.settings-container {
+  position: relative;
+}
 
 .settings-btn {
   background: transparent;
