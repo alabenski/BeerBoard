@@ -80,6 +80,10 @@ const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 const scoreOf = (person) =>
   parseInt(person.querySelector(".number")?.textContent) || 0;
 
+const MAX_NAME_LEN = 20;
+
+const MAX_TOTAL_LEN = 3;
+
 function computeTotals() {
   const people = $$(".person");
   const scores = people.map(scoreOf);
@@ -87,11 +91,7 @@ function computeTotals() {
   return { people, scores, sum, total: totalDrinks };
 }
 
-function personFillGradient(percent) {
-  return `linear-gradient(to right, #228b22 ${percent}%, #434343 ${percent}%)`;
-}
 function setPersonFill(person, percent) {
-  // Use CSS ::before width to avoid repainting layout and keep theme consistent
   person.style.setProperty("--fill", `${percent}%`);
 }
 
@@ -137,7 +137,7 @@ function updateTotalProgressComputed(sum, total) {
     totalBar.style.setProperty("--fill", `${percent}%`);
   }
   if (firstTotalClick) {
-    if (label) label.textContent = `Total: ${total} (click to edit)`;
+    if (label) label.textContent = `Total: (click to edit)`;
   } else {
     if (label) label.textContent = `Total: ${sum} / ${total}`;
   }
@@ -160,19 +160,17 @@ function updateBeerMugComputed(sum, total) {
   const fullness = Math.min(frames, Math.max(1, Math.round(percent * frames)));
   mug.src = `beers/beer${fullness}.png`;
 
-  // map progress -> amplitude (in degrees) and speed (duration)
-  // tweak these to taste
-  const minAmp = 1; // deg
-  const maxAmp = 8; // deg
+  const minAmp = 1;
+  const maxAmp = 8;
   const amp = minAmp + (maxAmp - minAmp) * percent;
 
-  const maxSpeed = 0.25; // s (fast at 100%)
-  const minSpeed = 0.9; // s (slow at 0%)
+  const maxSpeed = 0.25;
+  const minSpeed = 0.9;
   const dur = minSpeed - (minSpeed - maxSpeed) * percent;
 
   mug.style.setProperty("--amp", `${amp}deg`);
   mug.style.setProperty("--dur", `${dur}s`);
-  mug.classList.toggle("shaking", percent > 0);
+  mug.classList.toggle("shaking", percent > 0 && shakeEnabled);
 }
 
 function ensureRow(person) {
@@ -198,11 +196,14 @@ function setTrophyForRow(row, rankIndex) {
 
   tcol.innerHTML = "";
 
+  tcol.classList.remove("place-1", "place-2", "place-3");
+
   if (rankIndex < 3) {
     const img = document.createElement("img");
     img.src = `trophies/${rankIndex + 1}.png`;
     img.alt = `${rankIndex + 1} place`;
     tcol.appendChild(img);
+    tcol.classList.add(`place-${rankIndex + 1}`);
   } else {
     const spacer = document.createElement("div");
     spacer.style.width = "40px";
@@ -224,12 +225,14 @@ function updateAllTrophies() {
     if (!tcol) return;
 
     tcol.innerHTML = "";
+    tcol.classList.remove("place-1", "place-2", "place-3");
 
     if (i < 3) {
       const img = document.createElement("img");
       img.src = `trophies/${i + 1}.png`;
       img.alt = `${i + 1} place`;
       tcol.appendChild(img);
+      tcol.classList.add(`place-${i + 1}`);
     } else {
       const spacer = document.createElement("div");
       spacer.style.width = "40px";
@@ -249,12 +252,14 @@ function updateAllTrophiesByDom(scoreboard) {
       row.prepend(tcol);
     }
     tcol.innerHTML = "";
+    tcol.classList.remove("place-1", "place-2", "place-3");
 
     if (i < 3) {
       const img = document.createElement("img");
       img.src = `trophies/${i + 1}.png`;
       img.alt = `${i + 1} place`;
       tcol.appendChild(img);
+      tcol.classList.add(`place-${i + 1}`);
     } else {
       const spacer = document.createElement("div");
       spacer.style.width = "40px";
@@ -281,11 +286,21 @@ function sortLeaderboard() {
     .sort((a, b) => scoreOf(b) - scoreOf(a))
     .map((person) => ensureRow(person));
 
+  rows.forEach((row) => row.classList.remove("first-place"));
+
   sortedRows.forEach((row, i) => {
     setTrophyForRow(row, i);
     if (addBtn) scoreboard.insertBefore(row, addBtn);
     else scoreboard.appendChild(row);
   });
+
+  if (sortedRows.length > 0) {
+    const topRow = sortedRows[0];
+    const topPerson = topRow.querySelector(".person");
+    const topScore = topPerson ? scoreOf(topPerson) : 0;
+    const { total } = computeTotals();
+    if (topScore > 0 && total > 0) topRow.classList.add("first-place");
+  }
 
   sortedRows.forEach((row) => {
     const last = row.getBoundingClientRect();
@@ -338,13 +353,16 @@ function makeNameEditable(nameEl) {
     input.type = "text";
     input.value = currentName;
     input.className = "nameInput";
+    input.maxLength = MAX_NAME_LEN;
+    input.setAttribute("aria-label", "Player name");
+    input.placeholder = `Max ${MAX_NAME_LEN} chars`;
 
     nameEl.replaceWith(input);
     input.focus();
     input.select();
 
     function save() {
-      const newName = input.value.trim() || "—";
+      const newName = (input.value || "").slice(0, MAX_NAME_LEN).trim() || "—";
       nameEl.textContent = newName;
       input.replaceWith(nameEl);
       makeNameEditable(nameEl);
@@ -431,7 +449,6 @@ function setupPerson(person) {
 
       numberEl.textContent = (parseInt(numberEl.textContent) || 0) + 1;
 
-      // ✅ trigger animation only on THIS button
       plus.classList.add("pop");
       plus.addEventListener(
         "animationend",
@@ -457,11 +474,12 @@ function setupPerson(person) {
     rightSide.appendChild(plus);
   }
 
-  let remove = person.querySelector(".removeBtn");
+  const row = ensureRow(person);
+  let remove = row.querySelector(".removeBtn");
   if (!remove) {
     remove = document.createElement("button");
     remove.className = "removeBtn";
-    remove.textContent = "❌";
+    remove.textContent = "x";
     remove.addEventListener("click", () => {
       const row = person.parentElement.classList.contains("player-row")
         ? person.parentElement
@@ -489,11 +507,13 @@ function setupPerson(person) {
       );
     });
 
-    person.appendChild(remove);
+    row.appendChild(remove);
+  } else if (remove.parentElement !== row) {
+    row.appendChild(remove);
   }
 
   if (person.children.length >= 3) {
-    person.append(nameEl, rightSide, remove);
+    person.append(nameEl, rightSide);
   }
 }
 
@@ -508,19 +528,47 @@ function makeTotalEditable() {
     input.type = "number";
     input.value = totalDrinks;
     input.className = "totalInput";
+    input.inputMode = "numeric";
+    input.step = "1";
+    input.min = "0";
 
-    label.replaceWith(input);
+    const sanitize = () => {
+      let v = String(input.value || "");
+      v = v.replace(/\D+/g, "");
+      if (v.length > MAX_TOTAL_LEN) v = v.slice(0, MAX_TOTAL_LEN);
+      input.value = v;
+    };
+    input.addEventListener("input", sanitize);
+    input.addEventListener("paste", () => requestAnimationFrame(sanitize));
+    input.addEventListener("keydown", (e) => {
+      const blocked = [".", ",", "e", "E", "+", "-"];
+      if (blocked.includes(e.key)) {
+        e.preventDefault();
+      }
+    });
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "totalEdit";
+    const prefix = document.createElement("span");
+    prefix.className = "totalEditLabel";
+    prefix.textContent = "Total:";
+    wrapper.append(prefix, input);
+
+    label.replaceWith(wrapper);
     input.focus();
     input.select();
 
     function save() {
-      totalDrinks = parseInt(input.value) || 0;
+      const cleaned = String(input.value || "")
+        .replace(/\D+/g, "")
+        .slice(0, MAX_TOTAL_LEN);
+      totalDrinks = parseInt(cleaned) || 0;
 
       const newLabel = document.createElement("h2");
       newLabel.id = "totalProgressLabel";
 
       newLabel.textContent = `Total: ${totalDrinks}`;
-      input.replaceWith(newLabel);
+      wrapper.replaceWith(newLabel);
 
       makeTotalEditable();
       refreshBoard();
@@ -537,6 +585,27 @@ function toggleDropdown() {
   const dropdown = document.getElementById("settingsDropdown");
   const isOpen = dropdown.classList.contains("open");
   dropdown.classList.toggle("open", !isOpen);
+  if (!isOpen) {
+    document.getElementById("appSettingsDropdown")?.classList.remove("open");
+    const active =
+      THEME_CLASSES.find((c) => document.body.classList.contains(c)) || null;
+    if (active) updateActiveThemeButton(active);
+  } else {
+    document
+      .querySelectorAll("#settingsDropdown button[data-theme].active")
+      .forEach((b) => b.classList.remove("active"));
+  }
+  syncMenuOpenState();
+}
+
+function toggleAppSettings() {
+  const dd = document.getElementById("appSettingsDropdown");
+  const isOpen = dd.classList.contains("open");
+  dd.classList.toggle("open", !isOpen);
+  if (!isOpen) {
+    document.getElementById("settingsDropdown")?.classList.remove("open");
+  }
+  syncMenuOpenState();
 }
 
 const THEME_CLASSES = [
@@ -550,47 +619,228 @@ const THEME_CLASSES = [
 function setTheme(themeClassOrImage) {
   const body = document.body;
 
-  // If a class name was provided, toggle classes. Otherwise fall back to image URL support
   if (THEME_CLASSES.includes(themeClassOrImage)) {
     THEME_CLASSES.forEach((c) => body.classList.remove(c));
     body.classList.add(themeClassOrImage);
     body.style.removeProperty("background-image");
+    try {
+      localStorage.setItem("theme", themeClassOrImage);
+    } catch {}
   } else {
     body.style.backgroundImage = `url("${themeClassOrImage}")`;
     THEME_CLASSES.forEach((c) => body.classList.remove(c));
   }
+}
+function updateActiveThemeButton(activeTheme) {
+  const btns = document.querySelectorAll(
+    "#settingsDropdown button[data-theme]"
+  );
+  btns.forEach((b) =>
+    b.classList.toggle("active", b.dataset.theme === activeTheme)
+  );
+}
 
+function currentTheme() {
+  const body = document.body;
+  return THEME_CLASSES.find((c) => body.classList.contains(c)) || null;
+}
+
+function selectTheme(theme) {
+  const prev = currentTheme();
   const dd = document.getElementById("settingsDropdown");
-  if (dd) dd.classList.remove("open");
+
+  const wasOpen = dd && dd.classList.contains("open");
+  let startH = 0;
+  let startW = 0;
+  if (wasOpen) {
+    startH = dd.offsetHeight;
+    startW = dd.offsetWidth;
+  }
+
+  document.body.classList.add("bg-fading");
+  setTimeout(() => {
+    setTheme(theme);
+    if (dd) dd.classList.add("open");
+    updateActiveThemeButton(theme);
+    syncMenuOpenState();
+    requestAnimationFrame(() => {
+      document.body.classList.remove("bg-fading");
+    });
+  }, 180);
+
+  if (dd) {
+    const endH = dd.offsetHeight;
+    const endW = dd.offsetWidth;
+    if (startH !== endH || startW !== endW) {
+      dd.classList.add("animating-dim");
+      dd.style.height = startH + "px";
+      dd.style.width = startW + "px";
+
+      void dd.offsetHeight;
+      dd.style.height = endH + "px";
+      dd.style.width = endW + "px";
+      dd.addEventListener(
+        "transitionend",
+        () => {
+          dd.classList.remove("animating-dim");
+          dd.style.height = "";
+          dd.style.width = "";
+        },
+        { once: true }
+      );
+    } else {
+    }
+  } else {
+  }
+}
+
+function updateRaveVars(intensity) {
+  const i = Math.max(0, Math.min(100, Number(intensity) || 0));
+  const t = i / 100;
+  const body = document.body;
+
+  let hueSec = 14 - 10 * t;
+  let pulseSec = 5 - 2.5 * t;
+  let saturationPct = 120 + 140 * t;
+  let contrastPct = 100 + 25 * t;
+  let opacityF = 0.4 + 0.4 * t;
+  let blobAlpha = 0.18 + 0.22 * t;
+
+  if (t > 0.85) {
+    const boost = (t - 0.85) / 0.15;
+    saturationPct += 80 * boost;
+    contrastPct += 10 * boost;
+    opacityF += 0.1 * boost;
+    blobAlpha += 0.08 * boost;
+    hueSec -= 2.0 * boost;
+    pulseSec -= 0.8 * boost;
+  }
+
+  hueSec = Math.max(3.0, hueSec);
+  pulseSec = Math.max(2.0, pulseSec);
+  saturationPct = Math.min(360, Math.max(100, saturationPct));
+  contrastPct = Math.min(150, Math.max(90, contrastPct));
+  opacityF = Math.min(1.0, Math.max(0.2, opacityF));
+  blobAlpha = Math.min(0.6, Math.max(0.1, blobAlpha));
+
+  body.style.setProperty("--rave-hue-duration", hueSec.toFixed(2) + "s");
+  body.style.setProperty("--rave-pulse-duration", pulseSec.toFixed(2) + "s");
+  body.style.setProperty("--rave-saturation", Math.round(saturationPct) + "%");
+  body.style.setProperty("--rave-contrast", Math.round(contrastPct) + "%");
+  body.style.setProperty("--rave-opacity", opacityF.toFixed(2));
+  body.style.setProperty("--rave-blob", blobAlpha.toFixed(2));
+
+  try {
+    localStorage.setItem("raveIntensity", String(i));
+  } catch {}
 }
 
 window.addEventListener("click", (e) => {
-  if (!e.target.closest(".settings-container")) {
-    document.getElementById("settingsDropdown").classList.remove("open");
+  const container = e.target.closest(".settings-container");
+  if (!container) {
+    const dd = document.getElementById("settingsDropdown");
+    if (dd) dd.classList.remove("open");
+    document
+      .querySelectorAll("#settingsDropdown button[data-theme].active")
+      .forEach((b) => b.classList.remove("active"));
+    document.getElementById("appSettingsDropdown")?.classList.remove("open");
+    syncMenuOpenState();
   }
 });
 
-function hideTopBar() {
-  const button = document.getElementById("hideHeader");
-  const header = document.getElementById("header");
+function syncMenuOpenState() {
+  const appOpen = document
+    .getElementById("appSettingsDropdown")
+    ?.classList.contains("open");
 
-  header.classList.toggle("hidden");
-  button.classList.toggle("rotated");
+  document.body.classList.toggle("menu-open", !!appOpen);
+}
 
-  document.body.classList.toggle(
-    "header-hidden",
-    header.classList.contains("hidden")
+function setMuted(muted) {
+  const audios = [
+    document.getElementById("addBeerSound"),
+    document.getElementById("addPlayerSound"),
+    document.getElementById("removePlayerSound"),
+    document.getElementById("beerWin"),
+  ].filter(Boolean);
+  audios.forEach((a) => (a.muted = !!muted));
+  try {
+    localStorage.setItem("muted", muted ? "1" : "0");
+  } catch {}
+}
+
+let shakeEnabled = true;
+function setShakeEnabled(enabled) {
+  shakeEnabled = !!enabled;
+  try {
+    localStorage.setItem("shakeEnabled", shakeEnabled ? "1" : "0");
+  } catch {}
+  const mug = document.getElementById("beerMug");
+  if (mug && !shakeEnabled) mug.classList.remove("shaking");
+
+  try {
+    const { sum, total } = computeTotals();
+    updateBeerMugComputed(sum, total);
+  } catch {}
+}
+
+function isFullscreen() {
+  return !!(
+    document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.mozFullScreenElement ||
+    document.msFullscreenElement
   );
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Set a default theme if none selected yet
-  const hasTheme = THEME_CLASSES.some((c) =>
-    document.body.classList.contains(c)
-  );
-  if (!hasTheme) {
-    document.body.classList.add("theme-gradient");
+async function setFullscreen(on) {
+  try {
+    if (on && !isFullscreen()) {
+      const el = document.documentElement;
+      if (el.requestFullscreen) await el.requestFullscreen();
+      else if (el.webkitRequestFullscreen) await el.webkitRequestFullscreen();
+      else if (el.mozRequestFullScreen) await el.mozRequestFullScreen();
+      else if (el.msRequestFullscreen) await el.msRequestFullscreen();
+    } else if (!on && isFullscreen()) {
+      if (document.exitFullscreen) await document.exitFullscreen();
+      else if (document.webkitExitFullscreen)
+        await document.webkitExitFullscreen();
+      else if (document.mozCancelFullScreen)
+        await document.mozCancelFullScreen();
+      else if (document.msExitFullscreen) await document.msExitFullscreen();
+    }
+  } catch (e) {
+    console.warn("Fullscreen toggle failed", e);
   }
+}
+
+function toggleHeader() {
+  const header = document.getElementById("header");
+  const btn = document.getElementById("collapseHeader");
+  const collapsed = header.classList.toggle("collapsed");
+  if (btn) btn.textContent = collapsed ? "▾" : "▴";
+  document.body.classList.toggle("header-collapsed", collapsed);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  let savedTheme = null;
+  try {
+    savedTheme = localStorage.getItem("theme");
+  } catch {}
+  if (savedTheme && THEME_CLASSES.includes(savedTheme)) {
+    setTheme(savedTheme);
+  } else {
+    const hasTheme = THEME_CLASSES.some((c) =>
+      document.body.classList.contains(c)
+    );
+    if (!hasTheme) {
+      document.body.classList.add("theme-gradient");
+    }
+  }
+  updateActiveThemeButton(
+    THEME_CLASSES.find((c) => document.body.classList.contains(c)) ||
+      "theme-gradient"
+  );
   $$(".person").forEach(setupPerson);
   wrapInitialPeople();
 
@@ -610,7 +860,6 @@ document.addEventListener("DOMContentLoaded", () => {
       document.querySelector(".scoreboard").appendChild(personDiv);
       setupPerson(personDiv);
 
-      // ✅ wrap into row + animate
       const row = ensureRow(personDiv);
       row.classList.add("adding");
       row.addEventListener(
@@ -640,7 +889,6 @@ document.addEventListener("DOMContentLoaded", () => {
       addInline.before(personDiv);
       setupPerson(personDiv);
 
-      // ✅ wrap into row + animate
       const row = ensureRow(personDiv);
       row.classList.add("adding");
       row.addEventListener(
@@ -665,7 +913,57 @@ document.addEventListener("DOMContentLoaded", () => {
   makeTotalEditable();
   refreshBoard();
 
-  // Show a one-time helpful tip to make interactions obvious
+  updateRaveVars(100);
+
+  try {
+    const savedMute = localStorage.getItem("muted");
+    const savedShake = localStorage.getItem("shakeEnabled");
+    if (savedMute != null) setMuted(savedMute === "1");
+    if (savedShake != null) setShakeEnabled(savedShake === "1");
+  } catch {}
+
+  const muteToggle = document.getElementById("muteToggle");
+  const fsToggle = document.getElementById("fsToggle");
+  const shakeToggle = document.getElementById("shakeToggle");
+
+  if (muteToggle) {
+    try {
+      muteToggle.checked = localStorage.getItem("muted") === "1";
+    } catch {}
+    muteToggle.addEventListener("change", (e) => setMuted(e.target.checked));
+  }
+
+  if (shakeToggle) {
+    try {
+      shakeToggle.checked =
+        (localStorage.getItem("shakeEnabled") ?? "1") !== "1";
+    } catch {}
+    shakeToggle.addEventListener("change", (e) =>
+      setShakeEnabled(!e.target.checked)
+    );
+  }
+
+  const syncFs = () => {
+    if (fsToggle) fsToggle.checked = isFullscreen();
+  };
+  syncFs();
+  document.addEventListener("fullscreenchange", syncFs);
+  document.addEventListener("webkitfullscreenchange", syncFs);
+  document.addEventListener("mozfullscreenchange", syncFs);
+  document.addEventListener("MSFullscreenChange", syncFs);
+  if (fsToggle)
+    fsToggle.addEventListener("change", (e) => setFullscreen(e.target.checked));
+
+  document.addEventListener("mousemove", (e) => {
+    const el = e.target.closest(".tcol.place-1, .tcol.place-2, .tcol.place-3");
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    el.style.setProperty("--mx", x + "px");
+    el.style.setProperty("--my", y + "px");
+  });
+
   const TIP_KEY = "beerboard_tip_dismissed_v1";
   const banner = document.getElementById("tipBanner");
   const dismiss = document.getElementById("dismissTip");

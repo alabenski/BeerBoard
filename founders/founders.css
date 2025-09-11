@@ -1,0 +1,65 @@
+/* Founders layout */
+
+.founders {
+  width: min(92vw, 900px);
+  margin: 40px auto 120px auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  padding: 0 12px;
+}
+
+.founder-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  align-items: center;
+  gap: 14px;
+  transition: transform 180ms ease, box-shadow 180ms ease,
+    border-color 180ms ease;
+}
+.founder-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-light);
+  box-shadow: var(--shadow-lg);
+}
+.founder-card.wide {
+  grid-column: 1 / -1;
+}
+
+.founder-card h2 {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+}
+.founder-card p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.founder-card .avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  color: #0b1220;
+  background: radial-gradient(80px 60px at 30% 30%, #34d399, #22c55e);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.22),
+    inset 0 0 10px rgba(255, 255, 255, 0.25);
+}
+.founder-card .avatar-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+}
+.founder-card .avatar.small {
+  width: 48px;
+  height: 48px;
+}

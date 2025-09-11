@@ -32,27 +32,70 @@
               id="settings"
               onclick="toggleDropdown()"
             >
-              Settings
+              Backgrounds
             </button>
             <div class="dropdown" id="settingsDropdown">
-              <button onclick="setTheme('theme-gradient')">Dark Gradient</button>
-              <button onclick="setTheme('theme-amber')">Amber Glow</button>
-              <button onclick="setTheme('theme-berry')">Berry Night</button>
+              <button data-theme="theme-gradient" onclick="selectTheme('theme-gradient')">
+                Dark Gradient
+              </button>
+              <button data-theme="theme-berry" onclick="selectTheme('theme-berry')">Sunset Ember</button>
+              <div class="rave-row">
+                <button data-theme="theme-amber" onclick="selectTheme('theme-amber')">Rave</button>
+              </div>
               <hr />
-              <button onclick="setTheme('theme-original1')">
+              <button data-theme="theme-original1" onclick="selectTheme('theme-original1')">
                 Original: Background 1
               </button>
-              <button onclick="setTheme('theme-original2')">
+              <button data-theme="theme-original2" onclick="selectTheme('theme-original2')">
                 Original: Background 2
               </button>
             </div>
           </div>
+
+          <div class="settings-container">
+            <button
+              class="settings-btn"
+              id="appSettings"
+              onclick="toggleAppSettings()"
+            >
+              Settings
+            </button>
+            <div class="dropdown" id="appSettingsDropdown">
+              <label class="checkbox-row">
+                <input type="checkbox" id="muteToggle" />
+                <span>Mute sounds</span>
+              </label>
+              <label class="checkbox-row">
+                <input type="checkbox" id="fsToggle" />
+                <span>Fullscreen</span>
+              </label>
+              <label class="checkbox-row">
+                <input type="checkbox" id="shakeToggle" />
+                <span>Stop beer shaking</span>
+              </label>
+              <button
+                class="foundersBtn"
+                onclick="window.location.href='founders/founders.html'"
+              >
+                Meet the founders!
+              </button>
+            </div>
+          </div>
+          
         </div>
       </div>
     </header>
+    <button
+      class="collapse-btn"
+      id="collapseHeader"
+      onclick="toggleHeader()"
+      aria-label="Collapse header"
+    >
+      ▴
+    </button>
 
     <div id="beerMugContainer">
-      <img id="beerMug" src="beers/beer1.png" alt="Beer Mug" />
+      <img id="beerMug" src="beers/beer1.png" alt="Beer Mug" draggable="false" />
     </div>
 
     <div id="totalProgress">
@@ -81,7 +124,7 @@
       <button id="addPlayerInline" class="addBtn">➕ Add Player</button>
     </div>
 
-    <p class="copyright">©Jack and Adam 2025</p>
+    <!-- <p class="copyright">©Jack and Adam 2025</p> -->
 
     <audio id="addBeerSound" src="mp3/beengle1.mp3" preload="auto"></audio>
     <audio id="addPlayerSound" src="mp3/beengle2.mp3" preload="auto"></audio>
